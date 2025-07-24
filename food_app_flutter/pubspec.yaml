@@ -1,0 +1,47 @@
+name: food_app_flutter
+description: "A new Flutter project."
+# Ngăn chặn việc xuất bản gói này lên pub.dev
+publish_to: 'none'
+
+# Phiên bản của ứng dụng
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0' # Phạm vi SDK được khuyến nghị, thay vì chỉ ^3.8.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # Icon pack cho iOS style
+  cupertino_icons: ^1.0.8
+  fl_chart: ^0.64.0
+  # Để thực hiện các yêu cầu HTTP (gọi API)
+  http: ^1.2.1
+  # Quản lý trạng thái với Riverpod
+  flutter_riverpod: ^2.6.1
+  image_picker: ^1.1.2
+  shared_preferences: ^2.5.3
+  google_sign_in: ^5.4.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  # Công cụ phân tích mã để duy trì chất lượng code
+  flutter_lints: ^5.0.0
+
+flutter:
+  # Cho phép sử dụng Material Design trong ứng dụng Flutter
+  uses-material-design: true
+
+  # Bạn có thể thêm các phần khác như assets (hình ảnh, font) ở đây nếu cần.
+  # Ví dụ:
+  # assets:
+  #   - assets/images/
+  #   - assets/icons/
+
+  # fonts:
+  #   - family: Roboto
+  #     fonts:
+  #       - asset: assets/fonts/Roboto-Regular.ttf
+  #       - asset: assets/fonts/Roboto-Bold.ttf
+  #         weight: 700
