@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class QuanLyNguoiDung extends StatefulWidget {
   const QuanLyNguoiDung({super.key});
@@ -11,12 +12,10 @@ class QuanLyNguoiDung extends StatefulWidget {
 
 class _QuanLyNguoiDungState extends State<QuanLyNguoiDung> {
   int _page = 1;
-  final int _pageSize = 10;
+  final int _pageSize = 10000; // Hiển thị tất cả user trên 1 trang
   int _total = 0;
   bool _isLoadingMore = false;
   List<dynamic> _users = [];
-  List<String> _roles = ['Tất cả'];
-  String _selectedRole = 'Tất cả';
   String _search = '';
   bool _sortAsc = true;
   bool _loading = true;
@@ -45,6 +44,8 @@ class _QuanLyNguoiDungState extends State<QuanLyNguoiDung> {
     _searchController.addListener(() {
       setState(() {
         _search = _searchController.text;
+        _page = 1; // Reset về trang 1 khi tìm kiếm
+        // Không gọi fetchUsers ở đây, chỉ lọc local
       });
     });
   }
@@ -56,35 +57,33 @@ class _QuanLyNguoiDungState extends State<QuanLyNguoiDung> {
     super.dispose();
   }
 
+  Future<String?> _getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token');
+  }
+
   Future<void> fetchUsers() async {
-    if (_isLoadingMore) return;
     setState(() {
-      _loading = _page == 1;
+      _loading = true;
       _isLoadingMore = true;
     });
     final endpoint =
-        'https://food-app-cweu.onrender.com/api/v1/users?page=$_page&limit=$_pageSize';
+        'https://food-app-cweu.onrender.com/api/v1/users?page=$_page&limit=$_pageSize&search=$_search';
     try {
-      final response = await http.get(Uri.parse(endpoint));
+      final token = await _getToken();
+      final response = await http.get(
+        Uri.parse(endpoint),
+        headers: token != null ? {'Authorization': 'Bearer $token'} : {},
+      );
       debugPrint('API response status: ${response.statusCode}');
       debugPrint('API response body: ${response.body}');
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final items = data['data']?['items'] ?? [];
         if (mounted) {
-          // Check mounted before setState
           setState(() {
-            if (_page == 1) {
-              _users = items;
-            } else {
-              _users.addAll(items);
-            }
+            _users = items;
             _total = data['data']?['total'] ?? items.length;
-            _roles = ['Tất cả'];
-            _roles.addAll(_users
-                .map((e) => (e['role'] ?? '').toString())
-                .toSet()
-                .where((c) => c.isNotEmpty));
           });
         }
       } else {
@@ -102,7 +101,6 @@ class _QuanLyNguoiDungState extends State<QuanLyNguoiDung> {
         );
       }
     } finally {
-      // Use finally to ensure _isLoadingMore is reset
       if (mounted) {
         setState(() {
           _loading = false;
@@ -113,34 +111,49 @@ class _QuanLyNguoiDungState extends State<QuanLyNguoiDung> {
   }
 
   List<dynamic> get filteredUsers {
-    var list = _selectedRole == 'Tất cả'
-        ? _users
-        : _users.where((e) => e['role'] == _selectedRole).toList();
+    var list = _users;
+    debugPrint(
+        'filteredUsers.length = [33m[0m${list.length}, _users.length = ${_users.length}');
     if (_search.isNotEmpty) {
-      list = list
-          .where((e) =>
-              (e['name'] ?? '')
-                  .toString()
-                  .toLowerCase()
-                  .contains(_search.toLowerCase()) ||
-              (e['email'] ?? '')
-                  .toString()
-                  .toLowerCase()
-                  .contains(_search.toLowerCase()))
-          .toList();
+      final searchLower = _search.toLowerCase();
+      list = list.where((e) {
+        final fullName =
+            (e['fullName'] ?? e['name'] ?? '').toString().toLowerCase();
+        final email = (e['email'] ?? '').toString().toLowerCase();
+        final phone = (e['phone'] ?? '').toString().toLowerCase();
+        final address = (e['address'] ?? '').toString().toLowerCase();
+        return fullName.contains(searchLower) ||
+            email.contains(searchLower) ||
+            phone.contains(searchLower) ||
+            address.contains(searchLower);
+      }).toList();
     }
     list.sort((a, b) => _sortAsc
-        ? (a['name'] ?? '').toString().compareTo((b['name'] ?? '').toString())
-        : (b['name'] ?? '').toString().compareTo((a['name'] ?? '').toString()));
+        ? (a['fullName'] ?? a['name'] ?? '')
+            .toString()
+            .compareTo((b['fullName'] ?? b['name'] ?? '').toString())
+        : (b['fullName'] ?? b['name'] ?? '')
+            .toString()
+            .compareTo((a['fullName'] ?? a['name'] ?? '').toString()));
     return list;
   }
 
   Future<void> addOrEditUser([Map<String, dynamic>? user]) async {
-    final nameController = TextEditingController(text: user?['name'] ?? '');
+    // Controller cục bộ, dispose an toàn sau khi dialog đóng
+    final fullNameController =
+        TextEditingController(text: user?['fullName'] ?? '');
+    final phoneController = TextEditingController(text: user?['phone'] ?? '');
     final emailController = TextEditingController(text: user?['email'] ?? '');
-    final avatarController = TextEditingController(text: user?['avatar'] ?? '');
+    final passwordController = TextEditingController();
     final isEdit = user != null;
-    String selectedRole = user?['role'] ?? 'user';
+    String? userId;
+    if (isEdit) {
+      if (user != null && user.containsKey('_id')) {
+        userId = user['_id']?.toString();
+      } else if (user != null && user.containsKey('id')) {
+        userId = user['id']?.toString();
+      }
+    }
 
     await showDialog(
       context: context,
@@ -149,31 +162,29 @@ class _QuanLyNguoiDungState extends State<QuanLyNguoiDung> {
         content: SingleChildScrollView(
           child: Column(
             children: [
+              if (isEdit && userId != null)
+                Text('ID: $userId',
+                    style: const TextStyle(fontSize: 13, color: Colors.grey)),
               TextField(
-                controller: nameController,
-                decoration: const InputDecoration(labelText: 'Tên'),
+                controller: fullNameController,
+                decoration: const InputDecoration(labelText: 'Họ và tên *'),
+              ),
+              TextField(
+                controller: phoneController,
+                decoration: const InputDecoration(labelText: 'Số điện thoại *'),
+                keyboardType: TextInputType.phone,
               ),
               TextField(
                 controller: emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
+                decoration: const InputDecoration(labelText: 'Email *'),
+                enabled: !isEdit, // Chỉ nhập khi thêm, không cho sửa khi edit
               ),
-              DropdownButtonFormField<String>(
-                value: selectedRole,
-                decoration: const InputDecoration(labelText: 'Vai trò'),
-                items: ['admin', 'user']
-                    .map((role) => DropdownMenuItem(
-                          value: role,
-                          child: Text(role),
-                        ))
-                    .toList(),
-                onChanged: (value) {
-                  if (value != null) selectedRole = value;
-                },
-              ),
-              TextField(
-                controller: avatarController,
-                decoration: const InputDecoration(labelText: 'Link avatar'),
-              ),
+              if (!isEdit)
+                TextField(
+                  controller: passwordController,
+                  decoration: const InputDecoration(labelText: 'Mật khẩu *'),
+                  obscureText: true,
+                ),
             ],
           ),
         ),
@@ -185,27 +196,76 @@ class _QuanLyNguoiDungState extends State<QuanLyNguoiDung> {
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
             onPressed: () async {
-              final data = {
-                'name': nameController.text,
-                'email': emailController.text,
-                'role': selectedRole,
-                'avatar': avatarController.text,
-              };
-              final endpoint = isEdit
-                  ? 'https://food-app-cweu.onrender.com/api/v1/users/${user!['id']}'
-                  : 'https://food-app-cweu.onrender.com/api/v1/users';
-              final method = isEdit ? 'PUT' : 'POST';
+              // Validate các trường bắt buộc khi thêm mới
+              if (!isEdit &&
+                  (fullNameController.text.isEmpty ||
+                      emailController.text.isEmpty ||
+                      phoneController.text.isEmpty ||
+                      passwordController.text.isEmpty)) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text(
+                          'Vui lòng nhập đầy đủ họ tên, email, số điện thoại và mật khẩu!')),
+                );
+                return;
+              }
+              final data = isEdit
+                  ? {
+                      'fullName': fullNameController.text,
+                      'phone': phoneController.text,
+                    }
+                  : {
+                      'fullName': fullNameController.text,
+                      'phone': phoneController.text,
+                      'email': emailController.text,
+                      'password': passwordController.text,
+                    };
+              String endpoint;
+              if (isEdit) {
+                if (userId == null || userId.isEmpty) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text('Không tìm thấy ID người dùng!')),
+                    );
+                  }
+                  return;
+                }
+                endpoint =
+                    'https://food-app-cweu.onrender.com/api/v1/users/$userId';
+              } else {
+                endpoint = 'https://food-app-cweu.onrender.com/api/v1/users';
+              }
               try {
-                final request = http.Request(method, Uri.parse(endpoint))
-                  ..headers['Content-Type'] = 'application/json'
-                  ..body = jsonEncode(data);
-                final streamed = await request.send();
-                if (streamed.statusCode == 200 || streamed.statusCode == 201) {
+                final token = await _getToken();
+                http.Response response;
+                if (isEdit) {
+                  response = await http.patch(
+                    Uri.parse(endpoint),
+                    headers: {
+                      'Content-Type': 'application/json',
+                      if (token != null) 'Authorization': 'Bearer $token',
+                    },
+                    body: jsonEncode(data),
+                  );
+                } else {
+                  response = await http.post(
+                    Uri.parse(endpoint),
+                    headers: {
+                      'Content-Type': 'application/json',
+                      if (token != null) 'Authorization': 'Bearer $token',
+                    },
+                    body: jsonEncode(data),
+                  );
+                }
+                if (response.statusCode == 200 || response.statusCode == 201) {
                   if (mounted) {
                     Navigator.pop(dialogContext);
                   }
+                  // Luôn load lại danh sách mới nhất từ server
                   await fetchUsers();
                   if (mounted) {
+                    setState(() {}); // Đảm bảo UI cập nhật
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text(isEdit ? 'Đã lưu!' : 'Đã thêm!')),
                     );
@@ -213,7 +273,7 @@ class _QuanLyNguoiDungState extends State<QuanLyNguoiDung> {
                 } else {
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Lỗi: ${streamed.statusCode}')),
+                      SnackBar(content: Text('Lỗi: ${response.statusCode}')),
                     );
                   }
                 }
@@ -230,36 +290,55 @@ class _QuanLyNguoiDungState extends State<QuanLyNguoiDung> {
         ],
       ),
     );
-
-    nameController.dispose();
-    emailController.dispose();
-    avatarController.dispose();
+    // Không dispose controller ở đây để tránh lỗi khi dialog chưa thực sự đóng
   }
 
   Future<void> deleteUser(Map<String, dynamic> user) async {
-    final endpoint =
-        'https://food-app-cweu.onrender.com/api/v1/users/${user['id']}';
+    // Lấy id đúng khi xóa user
+    String? userId;
+    if (user.containsKey('_id')) {
+      userId = user['_id']?.toString();
+    } else if (user.containsKey('id')) {
+      userId = user['id']?.toString();
+    }
+    debugPrint('DELETE USER - id gửi lên: $userId, user: $user');
+    if (userId == null || userId.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Không tìm thấy ID người dùng!')),
+        );
+      }
+      return;
+    }
+    final endpoint = 'https://food-app-cweu.onrender.com/api/v1/users/$userId';
     try {
-      final response = await http.delete(Uri.parse(endpoint));
-      if (response.statusCode == 200) {
+      final token = await _getToken();
+      final response = await http.delete(
+        Uri.parse(endpoint),
+        headers: token != null ? {'Authorization': 'Bearer $token'} : {},
+      );
+      debugPrint('DELETE USER response status: \\${response.statusCode}');
+      debugPrint('DELETE USER response body: \\${response.body}');
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        // Luôn load lại danh sách mới nhất từ server
         await fetchUsers();
         if (mounted) {
-          // Check mounted before using context
+          setState(() {});
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Đã xóa người dùng!')),
           );
         }
       } else {
         if (mounted) {
-          // Check mounted before using context
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Lỗi: ${response.statusCode}')),
+            SnackBar(
+                content:
+                    Text('Lỗi: ${response.statusCode} | ${response.body}')),
           );
         }
       }
     } catch (e) {
       if (mounted) {
-        // Check mounted before using context
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Lỗi: $e')),
         );
@@ -276,108 +355,28 @@ class _QuanLyNguoiDungState extends State<QuanLyNguoiDung> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                // Tiêu đề
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-                  child: Row(
-                    children: <Widget>[
-                      const Icon(Icons.people, color: Colors.deepOrange, size: 32),
-                      const SizedBox(width: 10),
-                      const Text('Quản Lý Người Dùng',
-                          style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.deepOrange)),
-                    ],
-                  ),
-                ),
-                // Nút Thêm bên dưới tiêu đề, căn phải
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.deepOrange,
-                            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                        icon: const Icon(Icons.add, color: Colors.white),
-                        label: const Text('Thêm', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                        onPressed: () => addOrEditUser(),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                  padding: const EdgeInsets.all(16),
                   child: Row(
                     children: [
-                      Expanded(
-                        child: Wrap(
-                          spacing: 8,
-                          children: _roles
-                              .map((role) => ChoiceChip(
-                                    label: Text(role,
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold)),
-                                    selected: _selectedRole == role,
-                                    selectedColor: Colors.deepOrange,
-                                    backgroundColor: Colors.orange.shade100,
-                                    onSelected: (v) {
-                                      setState(() => _selectedRole = role);
-                                    },
-                                    labelStyle: TextStyle(
-                                        color: _selectedRole == role
-                                            ? Colors.white
-                                            : Colors.deepOrange),
-                                  ))
-                              .toList(),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                  child: Row(
-                    children: <Widget>[
-                      const Text('Sắp xếp:',
-                          style: TextStyle(
-                              fontSize: 16, color: Colors.deepOrange)),
-                      IconButton(
-                        icon: Icon(
-                            _sortAsc
-                                ? Icons.arrow_upward
-                                : Icons.arrow_downward,
-                            color: Colors.deepOrange),
-                        onPressed: () => setState(() => _sortAsc = !_sortAsc),
-                      ),
-                      const SizedBox(width: 16),
                       Expanded(
                         child: TextField(
-                          controller:
-                              _searchController, // Link controller to TextField
+                          controller: _searchController,
                           decoration: InputDecoration(
-                            hintText: 'Tìm kiếm tên hoặc email...',
-                            prefixIcon: const Icon(Icons.search,
-                                color: Colors.deepOrange),
+                            hintText: 'Tìm kiếm tên, email...',
+                            prefixIcon: const Icon(Icons.search),
                             border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none),
-                            filled: true,
-                            fillColor: Colors.white,
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 0,
-                                horizontal: 15), // Adjusted padding
+                                borderRadius: BorderRadius.circular(12)),
                           ),
-                          onChanged: (value) {
-                            // setState is now handled by the listener on _searchController
-                            // _search = value; // No need for this line anymore
-                          },
                         ),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton.icon(
+                        icon: const Icon(Icons.add),
+                        label: const Text('Thêm'),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.deepOrange),
+                        onPressed: () => addOrEditUser(),
                       ),
                     ],
                   ),
@@ -397,106 +396,122 @@ class _QuanLyNguoiDungState extends State<QuanLyNguoiDung> {
                       }
                       final user = filteredUsers[i];
                       return Card(
-                        color: Colors.white,
-                        elevation: 5,
                         margin: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 20), // Added horizontal margin
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18)),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 16, horizontal: 18),
-                          child: Row(
-                            children: <Widget>[
-                              user['avatar'] != null &&
-                                      user['avatar'].toString().isNotEmpty
-                                  ? CircleAvatar(
-                                      backgroundImage:
-                                          NetworkImage(user['avatar']),
-                                      radius: 32,
-                                    )
-                                  : const CircleAvatar(
-                                      backgroundColor: Colors.orange,
-                                      radius: 32,
-                                      child: Icon(Icons.person,
-                                          color: Colors.white, size: 32),
-                                    ),
-                              const SizedBox(width: 18),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(
-                                        (user['fullName'] ??
-                                                user['name'] ??
-                                                'Không tên')
-                                            .toString(),
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 20,
-                                            color: Colors.deepOrange)),
-                                    const SizedBox(height: 4),
-                                    Text(user['email'] ?? '',
-                                        style: const TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.orange)),
-                                    const SizedBox(height: 2),
-                                    Container(
-                                      // Changed to SizedBox for whitespace
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        color: Colors.orange.shade100,
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Text(user['role'] ?? '',
-                                          style: const TextStyle(
-                                              color: Colors.deepOrange,
-                                              fontWeight: FontWeight.bold)),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Column(
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.edit,
-                                        color: Colors.blue),
-                                    onPressed: () => addOrEditUser(user),
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.delete,
-                                        color: Colors.red),
-                                    onPressed: () => showDialog(
-                                      context: context,
-                                      builder: (dialogContext) => AlertDialog(
-                                        title: const Text('Xác nhận xóa'),
-                                        content: Text(
-                                            'Bạn có chắc chắn muốn xóa người dùng "${user['name']}"?'),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(dialogContext),
-                                            child: const Text('Hủy'),
-                                          ),
-                                          ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                                backgroundColor: Colors.red),
-                                            onPressed: () async {
-                                              if (mounted) {
-                                                Navigator.pop(dialogContext);
-                                              }
-                                              await deleteUser(user);
-                                            },
-                                            child: const Text('Xóa'),
-                                          ),
+                            vertical: 8, horizontal: 16),
+                        child: ListTile(
+                          leading: user['avatar'] != null &&
+                                  user['avatar'].toString().isNotEmpty
+                              ? CircleAvatar(
+                                  backgroundImage: NetworkImage(user['avatar']))
+                              : const CircleAvatar(child: Icon(Icons.person)),
+                          title: Text(
+                              user['fullName'] ?? user['name'] ?? 'Không tên'),
+                          subtitle: Text(
+                            (user['email'] ?? '') +
+                                (user['role'] != null &&
+                                        (user['role'] as String).isNotEmpty
+                                    ? ' | Vai trò: ${user['role']}'
+                                    : ''),
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon:
+                                    const Icon(Icons.info, color: Colors.blue),
+                                tooltip: 'Xem chi tiết',
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: const Text('Chi tiết người dùng'),
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                              'ID: \\${user['id'] ?? user['_id'] ?? ''}'),
+                                          Text(
+                                              'Tên: \\${user['fullName'] ?? user['name'] ?? ''}'),
+                                          Text(
+                                              'Email: \\${user['email'] ?? ''}'),
+                                          Text('SĐT: \\${user['phone'] ?? ''}'),
+                                          Text(
+                                              'Giới tính: \\${user['gender'] ?? ''}'),
+                                          Text(
+                                              'Địa chỉ: \\${user['address'] ?? ''}'),
+                                          Text(
+                                              'Vai trò: \\${user['role'] ?? ''}'),
+                                          Text(
+                                              'Trạng thái: \\${user['status'] ?? ''}'),
+                                          Text(
+                                              'Ngày tạo: \\${user['createdAt'] ?? ''}'),
+                                          Text(
+                                              'Ngày cập nhật: \\${user['updatedAt'] ?? ''}'),
+                                          if (user['avatar'] != null &&
+                                              user['avatar']
+                                                  .toString()
+                                                  .isNotEmpty)
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.only(top: 8),
+                                              child: Image.network(
+                                                  user['avatar'],
+                                                  height: 60),
+                                            ),
                                         ],
                                       ),
+                                      actions: [
+                                        TextButton(
+                                          child: const Text('Đóng'),
+                                          onPressed: () =>
+                                              Navigator.pop(context),
+                                        ),
+                                      ],
                                     ),
-                                  ),
-                                ],
+                                  );
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.edit,
+                                    color: Colors.orange),
+                                tooltip: 'Sửa',
+                                onPressed: () => addOrEditUser(user),
+                              ),
+                              IconButton(
+                                icon:
+                                    const Icon(Icons.delete, color: Colors.red),
+                                tooltip: 'Xóa',
+                                onPressed: () async {
+                                  final confirm = await showDialog<bool>(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: const Text('Xác nhận xóa'),
+                                      content: Text(
+                                          'Bạn có chắc muốn xóa người dùng này?'),
+                                      actions: [
+                                        TextButton(
+                                          child: const Text('Hủy'),
+                                          onPressed: () =>
+                                              Navigator.pop(context, false),
+                                        ),
+                                        ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.red),
+                                          child: const Text('Xóa',
+                                              style: TextStyle(
+                                                  color: Colors.white)),
+                                          onPressed: () =>
+                                              Navigator.pop(context, true),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                  if (confirm == true) {
+                                    await deleteUser(user);
+                                  }
+                                },
                               ),
                             ],
                           ),
@@ -505,6 +520,7 @@ class _QuanLyNguoiDungState extends State<QuanLyNguoiDung> {
                     },
                   ),
                 ),
+                // Không cần phân trang, hiển thị tất cả user trên 1 trang
               ],
             ),
           );

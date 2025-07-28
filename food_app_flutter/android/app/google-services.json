@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "363851869536",
+    "project_id": "kfc-food-6ef9b",
+    "storage_bucket": "kfc-food-6ef9b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:363851869536:android:793ae5abc7201f510c0205",
+        "android_client_info": {
+          "package_name": "com.toly1994.flutter_unit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "363851869536-nqlui7pc8p7u9h80n9ugpi991iqmq9gg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.toly1994.flutter_unit",
+            "certificate_hash": "9691c68f9bc325b16ca1ef214af74a31c55090d8"
+          }
+        },
+        {
+          "client_id": "363851869536-sj19ajkf8goj7gvmu6rvrn7mm0r6rq6u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCzT9QcYKJZCj2GK3Ux7C-384dRKEPt8OM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "363851869536-sj19ajkf8goj7gvmu6rvrn7mm0r6rq6u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

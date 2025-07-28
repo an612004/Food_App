@@ -55,66 +55,119 @@ class _QuanLyPhanQuyenState extends State<QuanLyPhanQuyen> {
   Future<void> addOrEditRole([Map<String, dynamic>? role]) async {
     final nameController =
         TextEditingController(text: role?['name'] ?? role?['title'] ?? '');
+    final List<String> permissions =
+        List<String>.from(role?['permissions'] ?? []);
+    final permissionController = TextEditingController();
     final isEdit = role != null;
     String? snackMessage;
     await showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(isEdit ? 'Sửa vai trò' : 'Thêm vai trò'),
-        content: SingleChildScrollView(
-          child: Column(
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(labelText: 'Tên vai trò'),
-              ),
-            ],
+      builder: (context) => StatefulBuilder(
+        builder: (context, setStateDialog) => AlertDialog(
+          title: Text(isEdit ? 'Sửa vai trò' : 'Thêm vai trò'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(labelText: 'Tên vai trò'),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: permissionController,
+                        decoration: const InputDecoration(
+                            labelText: 'Thêm quyền (vd: user:read)'),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.add, color: Colors.orange),
+                      tooltip: 'Thêm quyền',
+                      onPressed: () {
+                        final perm = permissionController.text.trim();
+                        if (perm.isNotEmpty && !permissions.contains(perm)) {
+                          setStateDialog(() {
+                            permissions.add(perm);
+                            permissionController.clear();
+                          });
+                        }
+                      },
+                    ),
+                  ],
+                ),
+                Wrap(
+                  spacing: 6,
+                  children: permissions
+                      .map((p) => Chip(
+                            label: Text(p),
+                            onDeleted: () {
+                              setStateDialog(() {
+                                permissions.remove(p);
+                              });
+                            },
+                          ))
+                      .toList(),
+                ),
+              ],
+            ),
           ),
-        ),
-        actions: [
-          TextButton(
-            child: const Text('Hủy'),
-            onPressed: () => Navigator.pop(context),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-            onPressed: () async {
-              final name = nameController.text.trim();
-              if (name.isEmpty) {
-                snackMessage = 'Vui lòng nhập tên vai trò!';
-                Navigator.pop(context);
-                return;
-              }
-              final data = {
-                'name': name,
-              };
-              final endpoint = isEdit
-                  ? 'https://food-app-cweu.onrender.com/api/v1/roles/${role['id']}'
-                  : 'https://food-app-cweu.onrender.com/api/v1/roles';
-              final method = isEdit ? 'PUT' : 'POST';
-              try {
-                final request = http.Request(method, Uri.parse(endpoint))
-                  ..headers['Content-Type'] = 'application/json'
-                  ..body = jsonEncode(data);
-                final streamed = await request.send();
-                if (streamed.statusCode == 200 || streamed.statusCode == 201) {
-                  snackMessage = isEdit ? 'Đã lưu!' : 'Đã thêm!';
+          actions: [
+            TextButton(
+              child: const Text('Hủy'),
+              onPressed: () => Navigator.pop(context),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+              onPressed: () async {
+                final name = nameController.text.trim();
+                if (name.isEmpty) {
+                  snackMessage = 'Vui lòng nhập tên vai trò!';
                   Navigator.pop(context);
-                  // Đợi một chút để backend cập nhật, sau đó reload danh sách
-                  await Future.delayed(const Duration(milliseconds: 300));
-                  await fetchRoles();
-                } else {
-                  snackMessage = 'Lỗi: ${streamed.statusCode}';
+                  return;
+                }
+                final data = {
+                  'name': name,
+                  'permissions': permissions,
+                };
+                final endpoint = isEdit
+                    ? 'https://food-app-cweu.onrender.com/api/v1/roles/${role['id']}'
+                    : 'https://food-app-cweu.onrender.com/api/v1/roles';
+                final method = isEdit ? 'PATCH' : 'POST';
+                try {
+                  final request = http.Request(method, Uri.parse(endpoint))
+                    ..headers['Content-Type'] = 'application/json'
+                    ..body = jsonEncode(data);
+                  final streamed = await request.send();
+                  final responseBody = await streamed.stream.bytesToString();
+                  if (streamed.statusCode == 200 ||
+                      streamed.statusCode == 201) {
+                    snackMessage = isEdit ? 'Đã lưu!' : 'Đã thêm!';
+                    Navigator.pop(context);
+                    await Future.delayed(const Duration(milliseconds: 300));
+                    await fetchRoles();
+                  } else {
+                    // Try to parse error message from API
+                    String errorMsg = 'Lỗi: ${streamed.statusCode}';
+                    try {
+                      final errJson = jsonDecode(responseBody);
+                      if (errJson is Map && errJson['message'] != null) {
+                        errorMsg = 'Lỗi: ${errJson['message']}';
+                      }
+                    } catch (_) {}
+                    snackMessage = errorMsg;
+                    Navigator.pop(context);
+                  }
+                } catch (e) {
+                  snackMessage = 'Lỗi: $e';
                   Navigator.pop(context);
                 }
-              } catch (e) {
-                snackMessage = 'Lỗi: $e';
-                Navigator.pop(context);
-              }
-            },
-            child: Text(isEdit ? 'Lưu' : 'Thêm'),
-          ),
-        ],
+              },
+              child: Text(isEdit ? 'Lưu' : 'Thêm'),
+            ),
+          ],
+        ),
       ),
     );
     if (snackMessage != null) {
@@ -212,7 +265,21 @@ class _QuanLyPhanQuyenState extends State<QuanLyPhanQuyen> {
                                       style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: Colors.deepOrange)),
-                                  subtitle: null,
+                                  subtitle: (role['permissions'] != null &&
+                                          (role['permissions'] as List)
+                                              .isNotEmpty)
+                                      ? Wrap(
+                                          spacing: 6,
+                                          children: (role['permissions']
+                                                  as List)
+                                              .map<Widget>((p) => Chip(
+                                                    label: Text(p.toString()),
+                                                    backgroundColor:
+                                                        Colors.orange.shade200,
+                                                  ))
+                                              .toList(),
+                                        )
+                                      : const Text('Không có quyền'),
                                   trailing: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [

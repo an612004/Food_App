@@ -8,7 +8,9 @@ import 'quan_ly_phan_quyen.dart';
 import '../Page login/login_screen.dart';
 
 class AdminHome extends StatefulWidget {
-  const AdminHome({super.key});
+  final dynamic userRole;
+  final String? userEmail;
+  const AdminHome({super.key, required this.userRole, this.userEmail});
 
   @override
   State<AdminHome> createState() => _AdminHomeState();
@@ -34,6 +36,36 @@ class _AdminHomeState extends State<AdminHome> {
     'Thống Kê',
     'Phân Quyền',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    bool isAdmin = false;
+    final userRole = widget.userRole;
+    final userEmail = (widget.userEmail ?? '').trim().toLowerCase();
+    if (userEmail == 'admin11@admin.com') {
+      isAdmin = true;
+    } else if (userRole is String && userRole.toLowerCase() == 'admin') {
+      isAdmin = true;
+    } else if (userRole is List) {
+      if (userRole.isNotEmpty &&
+          userRole[0] is Map &&
+          userRole[0]['name'] != null) {
+        isAdmin = userRole
+            .any((r) => (r['name']?.toString().toLowerCase() ?? '') == 'admin');
+      } else {
+        isAdmin =
+            userRole.map((e) => e.toString().toLowerCase()).contains('admin');
+      }
+    }
+    if (!isAdmin) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        );
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -18,28 +18,74 @@ class _QuanLyDonHangState extends State<QuanLyDonHang> {
     'Hoàn thành',
     'Đã hủy'
   ];
+  // Status code từ API
+  final List<String> _orderStatusList = [
+    'pending', // Chờ xác nhận
+    'preparing', // Đang giao
+    'completed', // Hoàn thành
+    'cancelled', // Đã hủy
+  ];
+
+  // Map status code <-> tiếng Việt
+  String statusToVN(String status) {
+    switch (status) {
+      case 'pending':
+        return 'Chờ xác nhận';
+      case 'preparing':
+        return 'Đang giao';
+      case 'completed':
+        return 'Hoàn thành';
+      case 'cancelled':
+        return 'Đã hủy';
+      default:
+        return status;
+    }
+  }
+
+  String statusFromVN(String vn) {
+    switch (vn) {
+      case 'Chờ xác nhận':
+        return 'pending';
+      case 'Đang giao':
+        return 'preparing';
+      case 'Hoàn thành':
+        return 'completed';
+      case 'Đã hủy':
+        return 'cancelled';
+      default:
+        return vn;
+    }
+  }
+
   String _selectedStatus = 'Tất cả';
   String _search = '';
   bool _loading = true;
 
   Future<void> fetchOrders() async {
     setState(() => _loading = true);
-    // Giả lập API, bạn thay endpoint thật ở đây
-    final endpoint = 'http://10.0.2.2:3000/api/v1/orders';
+    final endpoint = 'https://food-app-cweu.onrender.com/api/v1/Orders';
     try {
       final response = await http.get(Uri.parse(endpoint));
+      debugPrint('Status: \\${response.statusCode}');
+      debugPrint('Body: \\${response.body}');
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        _orders = data['data']?['items'] ?? [];
+        debugPrint('Parsed data: \\${data.toString()}');
+        _orders = data['data'] ?? [];
+        debugPrint('Orders length: \\${_orders.length}');
       }
-    } catch (e) {}
+    } catch (e) {
+      debugPrint('Error: \\${e.toString()}');
+    }
     setState(() => _loading = false);
   }
 
   List<dynamic> get filteredOrders {
     var list = _selectedStatus == 'Tất cả'
         ? _orders
-        : _orders.where((e) => e['status'] == _selectedStatus).toList();
+        : _orders
+            .where((e) => e['status'] == statusFromVN(_selectedStatus))
+            .toList();
     if (_search.isNotEmpty) {
       list = list
           .where((e) =>
@@ -119,7 +165,14 @@ class _QuanLyDonHangState extends State<QuanLyDonHang> {
                               selected: _selectedStatus == status,
                               selectedColor: statusColor(status),
                               onSelected: (v) {
-                                setState(() => _selectedStatus = status);
+                                setState(() {
+                                  if (_selectedStatus == status &&
+                                      status != 'Tất cả') {
+                                    _selectedStatus = 'Tất cả';
+                                  } else {
+                                    _selectedStatus = status;
+                                  }
+                                });
                               },
                               labelStyle: TextStyle(
                                   color: _selectedStatus == status
@@ -159,17 +212,32 @@ class _QuanLyDonHangState extends State<QuanLyDonHang> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12)),
                             child: ListTile(
-                              leading: Icon(statusIcon(order['status'] ?? ''),
-                                  color: statusColor(order['status'] ?? ''),
+                              leading: Icon(
+                                  statusIcon(statusToVN(order['status'] ?? '')),
+                                  color: statusColor(
+                                      statusToVN(order['status'] ?? '')),
                                   size: 40),
-                              title: Text('Mã đơn: ${order['orderCode'] ?? ''}',
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.deepOrange)),
+                              title: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                      'Mã đơn: ${order['orderCode'] ?? order['id'] ?? ''}',
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.deepOrange)),
+                                  Text(
+                                      'Tên: ${order['name'] ?? order['customerName'] ?? ''}',
+                                      style: const TextStyle(
+                                          color: Colors.orange)),
+                                ],
+                              ),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Khách: ${order['customerName'] ?? ''}',
+                                  Text('SĐT: ${order['phone'] ?? ''}',
+                                      style: const TextStyle(
+                                          color: Colors.deepOrange)),
+                                  Text('Địa chỉ: ${order['address'] ?? ''}',
                                       style: const TextStyle(
                                           color: Colors.orange)),
                                   Text(
@@ -181,31 +249,170 @@ class _QuanLyDonHangState extends State<QuanLyDonHang> {
                                           color: Colors.orange)),
                                 ],
                               ),
-                              trailing: Text(order['status'] ?? '',
-                                  style: TextStyle(
-                                      color: statusColor(order['status'] ?? ''),
-                                      fontWeight: FontWeight.bold)),
+                              trailing: DropdownButton<String>(
+                                value: order['status'],
+                                items: _orderStatusList
+                                    .map((status) => DropdownMenuItem(
+                                          value: status,
+                                          child: Text(statusToVN(status)),
+                                        ))
+                                    .toList(),
+                                onChanged: (newStatus) async {
+                                  if (newStatus != null &&
+                                      newStatus != order['status']) {
+                                    final orderId =
+                                        order['id'] ?? order['orderCode'];
+                                    final url =
+                                        'https://food-app-cweu.onrender.com/api/v1/Orders/$orderId';
+                                    try {
+                                      final res = await http.patch(
+                                        Uri.parse(url),
+                                        headers: {
+                                          'Content-Type': 'application/json'
+                                        },
+                                        body: jsonEncode({'status': newStatus}),
+                                      );
+                                      if (res.statusCode == 200) {
+                                        setState(() {
+                                          order['status'] = newStatus;
+                                        });
+                                      } else {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                              content: Text(
+                                                  'Cập nhật trạng thái thất bại!')),
+                                        );
+                                      }
+                                    } catch (e) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(content: Text('Lỗi kết nối!')),
+                                      );
+                                    }
+                                  }
+                                },
+                              ),
                               onTap: () {
                                 showDialog(
                                   context: context,
                                   builder: (context) => AlertDialog(
                                     title: Text('Chi tiết đơn hàng'),
-                                    content: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                            'Mã đơn: ${order['orderCode'] ?? ''}'),
-                                        Text(
-                                            'Khách: ${order['customerName'] ?? ''}'),
-                                        Text(
-                                            'Tổng tiền: ${order['total']?.toString() ?? '0'}đ'),
-                                        Text('Ngày: ${order['date'] ?? ''}'),
-                                        Text(
-                                            'Trạng thái: ${order['status'] ?? ''}'),
-                                        // Có thể thêm chi tiết món ăn trong đơn
-                                      ],
+                                    content: SingleChildScrollView(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                              'Mã đơn: ${order['orderCode'] ?? order['id'] ?? ''}'),
+                                          Text(
+                                              'Tên: ${order['name'] ?? order['customerName'] ?? ''}'),
+                                          Text('SĐT: ${order['phone'] ?? ''}'),
+                                          Text(
+                                              'Địa chỉ: ${order['address'] ?? ''}'),
+                                          Text(
+                                              'Tổng tiền: ${order['total']?.toString() ?? '0'}đ'),
+                                          Text('Ngày: ${order['date'] ?? ''}'),
+                                          Row(
+                                            children: [
+                                              const Text('Trạng thái: '),
+                                              DropdownButton<String>(
+                                                value: order['status'],
+                                                items: _orderStatusList
+                                                    .map((status) =>
+                                                        DropdownMenuItem(
+                                                          value: status,
+                                                          child: Text(
+                                                              statusToVN(
+                                                                  status)),
+                                                        ))
+                                                    .toList(),
+                                                onChanged: (newStatus) async {
+                                                  if (newStatus != null &&
+                                                      newStatus !=
+                                                          order['status']) {
+                                                    final orderId =
+                                                        order['id'] ??
+                                                            order['orderCode'];
+                                                    final url =
+                                                        'https://food-app-cweu.onrender.com/api/v1/Orders/$orderId';
+                                                    try {
+                                                      final res =
+                                                          await http.patch(
+                                                        Uri.parse(url),
+                                                        headers: {
+                                                          'Content-Type':
+                                                              'application/json'
+                                                        },
+                                                        body: jsonEncode({
+                                                          'status': newStatus
+                                                        }),
+                                                      );
+                                                      if (res.statusCode ==
+                                                          200) {
+                                                        setState(() {
+                                                          order['status'] =
+                                                              newStatus;
+                                                        });
+                                                        Navigator.pop(context);
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(
+                                                          SnackBar(
+                                                              content: Text(
+                                                                  'Cập nhật trạng thái thành công!')),
+                                                        );
+                                                      } else {
+                                                        ScaffoldMessenger.of(
+                                                                context)
+                                                            .showSnackBar(
+                                                          SnackBar(
+                                                              content: Text(
+                                                                  'Cập nhật trạng thái thất bại!')),
+                                                        );
+                                                      }
+                                                    } catch (e) {
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                        SnackBar(
+                                                            content: Text(
+                                                                'Lỗi kết nối!')),
+                                                      );
+                                                    }
+                                                  }
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 8),
+                                          if (order['items'] != null &&
+                                              order['items'] is List &&
+                                              order['items'].isNotEmpty)
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                const Text('Danh sách món:',
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                                ...order['items']
+                                                    .map<Widget>((item) =>
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                                  vertical: 2),
+                                                          child: Text(
+                                                              '- ${item['name'] ?? ''} x${item['quantity'] ?? 1}'),
+                                                        ))
+                                                    .toList(),
+                                              ],
+                                            ),
+                                        ],
+                                      ),
                                     ),
                                     actions: [
                                       TextButton(
