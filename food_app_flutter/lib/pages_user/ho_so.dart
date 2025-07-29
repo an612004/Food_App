@@ -104,6 +104,14 @@ class _HoSoState extends State<HoSo> {
         _controllers['gender']!.text.trim().isNotEmpty) {
       bodyMap['gender'] = _controllers['gender']!.text.trim();
     }
+    if (_controllers['email'] != null &&
+        _controllers['email']!.text.trim().isNotEmpty) {
+      bodyMap['email'] = _controllers['email']!.text.trim();
+    }
+    if (_controllers['password'] != null &&
+        _controllers['password']!.text.trim().isNotEmpty) {
+      bodyMap['password'] = _controllers['password']!.text.trim();
+    }
     final body = jsonEncode(bodyMap);
     try {
       final response = await http.patch(

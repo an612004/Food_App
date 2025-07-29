@@ -6,6 +6,8 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../pages_user/home_user.dart';
 import '../admin/admin_home.dart';
+// import '../admin/quan_ly_nguoi_dung.dart';
+import '../admin/quan_ly_thong_ke.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -310,10 +312,20 @@ class _LoginScreenState extends State<LoginScreen> {
             const SnackBar(content: Text('Đăng nhập thành công!')),
           );
           await Future.delayed(const Duration(milliseconds: 500));
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const HomeUser()),
-          );
+          // Lấy role từ user object, có thể là 'role', 'userRole', hoặc 'type'
+          final role =
+              user['role'] ?? user['userRole'] ?? user['type'] ?? 'user';
+          // ...existing code...
+          if (role == 'admin') {
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) => const QuanLyThongKe()));
+          } else {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeUser()),
+            );
+          }
+// ...existing code...
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
