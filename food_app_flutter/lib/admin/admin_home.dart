@@ -23,7 +23,7 @@ class _AdminHomeState extends State<AdminHome> {
     QuanLyNguoiDung(),
     QuanLyDonHang(),
     QuanLyMonAn(),
-    QuanLyVoucher(),
+    // QuanLyVoucher(),
     QuanLyThongKe(),
     QuanLyPhanQuyen(),
   ];
@@ -32,7 +32,7 @@ class _AdminHomeState extends State<AdminHome> {
     'Quản lý Người Dùng',
     'Quản lý Đơn Hàng',
     'Quản lý Món Ăn',
-    'Quản lý Voucher',
+    // 'Quản lý Voucher',
     'Thống Kê',
     'Phân Quyền',
   ];
@@ -138,8 +138,8 @@ class _AdminHomeState extends State<AdminHome> {
           BottomNavigationBarItem(
               icon: Icon(Icons.shopping_cart), label: 'Đơn Hàng'),
           BottomNavigationBarItem(icon: Icon(Icons.fastfood), label: 'Món Ăn'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.card_giftcard), label: 'Voucher'),
+          // BottomNavigationBarItem(
+          //     icon: Icon(Icons.card_giftcard), label: 'Voucher'),
           BottomNavigationBarItem(
               icon: Icon(Icons.bar_chart), label: 'Thống Kê'),
           BottomNavigationBarItem(

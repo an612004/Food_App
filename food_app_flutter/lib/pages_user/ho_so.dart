@@ -207,6 +207,187 @@ class _HoSoState extends State<HoSo> {
   @override
   Widget build(BuildContext context) {
     List<Widget> children = [];
+    children.add(
+      ElevatedButton.icon(
+        icon: Icon(Icons.lock, color: Colors.white),
+        label: Text('Đổi mật khẩu', style: TextStyle(color: Colors.white)),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.blue,
+          padding: EdgeInsets.symmetric(vertical: 14),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+        onPressed: () async {
+          final oldPassController = TextEditingController();
+          final newPassController = TextEditingController();
+          final confirmPassController = TextEditingController();
+          bool oldPassObscure = true;
+          bool newPassObscure = true;
+          bool confirmPassObscure = true;
+          await showDialog(
+              context: context,
+              builder: (context) => StatefulBuilder(
+                    builder: (context, setState) => AlertDialog(
+                      title: Text('Đổi mật khẩu'),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          TextField(
+                            controller: oldPassController,
+                            obscureText: oldPassObscure,
+                            decoration: InputDecoration(
+                              labelText: 'Mật khẩu hiện tại',
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  oldPassObscure
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                ),
+                                onPressed: () => setState(() {
+                                  oldPassObscure = !oldPassObscure;
+                                }),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 12),
+                          TextField(
+                            controller: newPassController,
+                            obscureText: newPassObscure,
+                            decoration: InputDecoration(
+                              labelText: 'Mật khẩu mới',
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  newPassObscure
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                ),
+                                onPressed: () => setState(() {
+                                  newPassObscure = !newPassObscure;
+                                }),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 12),
+                          TextField(
+                            controller: confirmPassController,
+                            obscureText: confirmPassObscure,
+                            decoration: InputDecoration(
+                              labelText: 'Nhập lại mật khẩu mới',
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  confirmPassObscure
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                ),
+                                onPressed: () => setState(() {
+                                  confirmPassObscure = !confirmPassObscure;
+                                }),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      actions: [
+                        TextButton(
+                          child: Text('Hủy'),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue),
+                          child: Text('Xác nhận'),
+                          onPressed: () async {
+                            final oldPass = oldPassController.text.trim();
+                            final newPass = newPassController.text.trim();
+                            final confirm = confirmPassController.text.trim();
+
+                            if (oldPass.isEmpty ||
+                                newPass.isEmpty ||
+                                confirm.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content:
+                                        Text('Vui lòng nhập đủ thông tin!')),
+                              );
+                              return;
+                            }
+                            if (newPass != confirm) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text('Mật khẩu mới không khớp!')),
+                              );
+                              return;
+                            }
+                            // Kiểm tra độ mạnh mật khẩu mới
+                            final passwordRegex = RegExp(
+                                r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#\$&*~]).{8,}$');
+                            if (!passwordRegex.hasMatch(newPass)) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text(
+                                        'Mật khẩu phải từ 8 ký tự, có chữ hoa, số và ký tự đặc biệt!')),
+                              );
+                              return;
+                            }
+                            final prefs = await SharedPreferences.getInstance();
+                            final token = prefs.getString('token') ?? '';
+                            final endpoint =
+                                'https://food-app-cweu.onrender.com/api/v1/auth/reset-password';
+                            final response = await http.post(
+                              Uri.parse(endpoint),
+                              headers: {
+                                'Content-Type': 'application/json',
+                                if (token.isNotEmpty)
+                                  'Authorization': 'Bearer $token',
+                              },
+                              body: jsonEncode({
+                                'email': _controllers['email']?.text ?? '',
+                                'oldPassword': oldPass,
+                                'newPassword': newPass,
+                              }),
+                            );
+                            // in ra response để debug
+                            debugPrint(
+                                'Reset password response: ${response.body}');
+                            debugPrint('email: ${_controllers['email']?.text}');
+                            debugPrint('oldPassword: $oldPass');
+                            debugPrint('newPassword: $newPass');
+                            if (response.statusCode == 200) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text('Đổi mật khẩu thành công!')),
+                              );
+                              Navigator.pop(context);
+                            } else {
+                              String msg = 'Lỗi đổi mật khẩu!';
+                              try {
+                                final err = jsonDecode(response.body);
+                                if (err is Map && err['message'] != null) {
+                                  msg = err['message'].toString();
+                                } else if (err is String) {
+                                  msg = err;
+                                }
+                                // Nếu lỗi liên quan đến password không đủ mạnh
+                                if (msg.contains('not strong enough')) {
+                                  msg =
+                                      'Mật khẩu chưa đủ mạnh. Vui lòng nhập mật khẩu từ 8 ký tự, có chữ hoa, chữ thường, số và ký tự đặc biệt!';
+                                }
+                              } catch (_) {}
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(msg)),
+                              );
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ) // lỗi gì
+              );
+        },
+      ),
+    );
+    children.add(SizedBox(height: 16));
+
     // Hiện gmail, không cho sửa
     if (_controllers['email'] != null) {
       children.add(TextField(
@@ -316,6 +497,7 @@ class _HoSoState extends State<HoSo> {
       ));
       children.add(SizedBox(height: 16));
     }
+
     // Hiện giới tính
     if (_controllers['gender'] != null) {
       children.add(TextField(

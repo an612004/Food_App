@@ -744,6 +744,2654 @@ class _LoginScreenState extends State<LoginScreen> {
 
 _**Assistant**_
 
+Bạn hãy thay thế phần hiển thị bước nhập mã xác thực (`_forgotStep == 1`) bằng đoạn sau để có thêm nút "Gửi lại mã" ngay tại form nhập mã xác thực. Khi nhấn "Gửi lại mã", hệ thống sẽ gửi lại mã xác thực về email đã nhập và vẫn giữ nguyên form nhập mã + đặt lại mật khẩu.
+
+````dart
+// ...existing code...
+else if (_forgotStep == 1) ...[
+  Text('Nhập mã xác thực đã gửi về email: $_resetEmail',
+      style: const TextStyle(color: Colors.black87)),
+  const SizedBox(height: 20),
+  TextField(
+    controller: _resetCodeController,
+    decoration: const InputDecoration(
+        labelText: 'Mã xác thực (code)',
+        border: OutlineInputBorder()),
+  ),
+  const SizedBox(height: 24),
+  Row(
+    children: [
+      Expanded(
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange),
+          child: const Text('Xác thực mã'),
+          onPressed: _verifyCode,
+        ),
+      ),
+      const SizedBox(width: 12),
+      TextButton(
+        onPressed: () {
+          // Gửi lại mã xác thực về email đã nhập
+          _forgotEmailController.text = _resetEmail;
+          _sendForgotPasswordEmail();
+        },
+        child: const Text('Gửi lại mã', style: TextStyle(color: Colors.orange)),
+      ),
+    ],
+  ),
+  TextButton(
+    onPressed: () {
+      setState(() {
+        _showForgotPassword = false;
+        _forgotStep = 0;
+      });
+    },
+    child: const Text('Quay lại đăng nhập'),
+  ),
+],
+// ...existing code...
+````
+
+**Chỉ cần thay thế đoạn `_forgotStep == 1` như trên, bạn sẽ có đúng luồng mong muốn:**  
+- Khi nhập email và gửi mã, sẽ chuyển sang form nhập mã xác thực và đặt lại mật khẩu mới.  
+- Nếu nhấn "Gửi lại mã", mã xác thực sẽ được gửi lại và vẫn giữ nguyên form nhập mã.
+
+Bạn chỉ cần copy đoạn trên và thay vào đúng vị trí trong file là xong!
+
+---
+
+_**User**_
+
+lỗi gì [{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "uri_does_not_exist",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/uri_does_not_exist",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 8,
+	"message": "Target of URI doesn't exist: 'package:shared_preferences/shared_preferences'.\nTry creating the file referenced by the URI, or try using a URI for a file that does exist.",
+	"source": "dart",
+	"startLineNumber": 6,
+	"startColumn": 8,
+	"endLineNumber": 6,
+	"endColumn": 55,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "undefined_identifier",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/undefined_identifier",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 8,
+	"message": "Undefined name 'SharedPreferences'.\nTry correcting the name to one that is defined, or defining the name.",
+	"source": "dart",
+	"startLineNumber": 309,
+	"startColumn": 31,
+	"endLineNumber": 309,
+	"endColumn": 48,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "unused_element",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/unused_element",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 4,
+	"message": "The declaration '_showResetPasswordDialog' isn't referenced.\nTry removing the declaration of '_showResetPasswordDialog'.",
+	"source": "dart",
+	"startLineNumber": 171,
+	"startColumn": 16,
+	"endLineNumber": 171,
+	"endColumn": 40,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 48,
+	"startColumn": 30,
+	"endLineNumber": 48,
+	"endColumn": 37,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 61,
+	"startColumn": 30,
+	"endLineNumber": 61,
+	"endColumn": 37,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 66,
+	"startColumn": 28,
+	"endLineNumber": 66,
+	"endColumn": 35,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 91,
+	"startColumn": 30,
+	"endLineNumber": 91,
+	"endColumn": 37,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 103,
+	"startColumn": 30,
+	"endLineNumber": 103,
+	"endColumn": 37,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 108,
+	"startColumn": 28,
+	"endLineNumber": 108,
+	"endColumn": 35,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 141,
+	"startColumn": 30,
+	"endLineNumber": 141,
+	"endColumn": 37,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 156,
+	"startColumn": 30,
+	"endLineNumber": 156,
+	"endColumn": 37,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 161,
+	"startColumn": 28,
+	"endLineNumber": 161,
+	"endColumn": 35,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 252,
+	"startColumn": 29,
+	"endLineNumber": 252,
+	"endColumn": 36,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 259,
+	"startColumn": 28,
+	"endLineNumber": 259,
+	"endColumn": 35,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "curly_braces_in_flow_control_structures",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/curly_braces_in_flow_control_structures",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Statements in an if should be enclosed in a block.\nTry wrapping the statement in a block.",
+	"source": "dart",
+	"startLineNumber": 301,
+	"startColumn": 11,
+	"endLineNumber": 301,
+	"endColumn": 45,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "curly_braces_in_flow_control_structures",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/curly_braces_in_flow_control_structures",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Statements in an if should be enclosed in a block.\nTry wrapping the statement in a block.",
+	"source": "dart",
+	"startLineNumber": 303,
+	"startColumn": 11,
+	"endLineNumber": 303,
+	"endColumn": 39,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "curly_braces_in_flow_control_structures",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/curly_braces_in_flow_control_structures",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Statements in an if should be enclosed in a block.\nTry wrapping the statement in a block.",
+	"source": "dart",
+	"startLineNumber": 305,
+	"startColumn": 11,
+	"endLineNumber": 305,
+	"endColumn": 46,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "curly_braces_in_flow_control_structures",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/curly_braces_in_flow_control_structures",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Statements in an if should be enclosed in a block.\nTry wrapping the statement in a block.",
+	"source": "dart",
+	"startLineNumber": 306,
+	"startColumn": 42,
+	"endLineNumber": 306,
+	"endColumn": 71,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 313,
+	"startColumn": 32,
+	"endLineNumber": 313,
+	"endColumn": 39,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 321,
+	"startColumn": 13,
+	"endLineNumber": 321,
+	"endColumn": 20,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 325,
+	"startColumn": 32,
+	"endLineNumber": 325,
+	"endColumn": 39,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 344,
+	"startColumn": 30,
+	"endLineNumber": 344,
+	"endColumn": 37,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 349,
+	"startColumn": 28,
+	"endLineNumber": 349,
+	"endColumn": 35,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 487,
+	"startColumn": 29,
+	"endLineNumber": 487,
+	"endColumn": 36,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 492,
+	"startColumn": 48,
+	"endLineNumber": 492,
+	"endColumn": 55,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "sort_child_properties_last",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/sort_child_properties_last",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "The 'child' argument should be last in widget constructor invocations.\nTry moving the argument to the end of the argument list.",
+	"source": "dart",
+	"startLineNumber": 551,
+	"startColumn": 25,
+	"endLineNumber": 551,
+	"endColumn": 61,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "sort_child_properties_last",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/sort_child_properties_last",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "The 'child' argument should be last in widget constructor invocations.\nTry moving the argument to the end of the argument list.",
+	"source": "dart",
+	"startLineNumber": 581,
+	"startColumn": 25,
+	"endLineNumber": 581,
+	"endColumn": 57,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "sort_child_properties_last",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/sort_child_properties_last",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "The 'child' argument should be last in widget constructor invocations.\nTry moving the argument to the end of the argument list.",
+	"source": "dart",
+	"startLineNumber": 633,
+	"startColumn": 29,
+	"endLineNumber": 633,
+	"endColumn": 66,
+	"origin": "extHost1"
+}]
+
+---
+
+_**Assistant**_
+
+Bạn đang gặp các lỗi sau:
+
+1. **Target of URI doesn't exist: 'package:shared_preferences/shared_preferences'**  
+   → Bạn chưa cài package `shared_preferences`.  
+   **Cách khắc phục:**  
+   Mở terminal và chạy:
+   ```
+   flutter pub add shared_preferences
+   ```
+   hoặc nếu dùng pubspec.yaml thì thêm:
+   ```yaml
+   dependencies:
+     shared_preferences: ^2.2.2
+   ```
+   rồi chạy:
+   ```
+   flutter pub get
+   ```
+
+2. **Undefined name 'SharedPreferences'**  
+   → Do lỗi trên, Dart không nhận ra `SharedPreferences`.
+
+3. **Don't use 'BuildContext's across async gaps**  
+   → Bạn dùng `BuildContext` (ví dụ: `ScaffoldMessenger.of(context)`) sau khi có `await`.  
+   **Cách sửa:**  
+   Thêm kiểm tra `if (!mounted) return;` sau mỗi lệnh `await` trước khi dùng `context`.  
+   Ví dụ:
+   ````dart
+   await Future.delayed(const Duration(milliseconds: 500));
+   if (!mounted) return;
+   ScaffoldMessenger.of(context).showSnackBar(...);
+   ````
+
+4. **Statements in an if should be enclosed in a block**  
+   → Nếu dùng `if (điều kiện)`, phải có `{ ... }` nếu có nhiều hơn 1 dòng lệnh.
+
+5. **The declaration '_showResetPasswordDialog' isn't referenced**  
+   → Hàm `_showResetPasswordDialog` không được sử dụng. Có thể bỏ đi nếu không dùng.
+
+6. **The 'child' argument should be last in widget constructor invocations**  
+   → Khi tạo widget, tham số `child:` nên để cuối cùng.
+
+**Tóm lại:**  
+- Cài đặt `shared_preferences`  
+- Thêm `if (!mounted) return;` sau mỗi `await` trước khi dùng `context`  
+- Sửa lại các if thiếu `{}`  
+- Đưa `child:` xuống cuối khi tạo widget  
+- Xóa hàm không dùng nếu muốn sạch warning
+
+Nếu cần sửa cụ thể đoạn nào, hãy gửi đoạn code đó!
+
+---
+
+_**User**_
+
+cập nhật name: food_app_flutter
+description: "A new Flutter project."
+# Ngăn chặn việc xuất bản gói này lên pub.dev
+publish_to: 'none'
+
+# Phiên bản của ứng dụng
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0' # Phạm vi SDK được khuyến nghị, thay vì chỉ ^3.8.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # Icon pack cho iOS style
+  cupertino_icons: ^1.0.8
+  fl_chart: ^0.64.0
+  # Để thực hiện các yêu cầu HTTP (gọi API)
+  http: ^1.2.1
+  # Quản lý trạng thái với Riverpod
+  flutter_riverpod: ^2.6.1
+  image_picker: ^1.1.2
+  shared_preferences: ^2.5.3
+  google_sign_in: ^5.4.4
+  firebase_auth: ^4.19.4
+  firebase_core: ^2.30.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  # Công cụ phân tích mã để duy trì chất lượng code
+  flutter_lints: ^5.0.0
+
+flutter:
+  # Cho phép sử dụng Material Design trong ứng dụng Flutter
+  uses-material-design: true
+
+  # Bạn có thể thêm các phần khác như assets (hình ảnh, font) ở đây nếu cần.
+  # Ví dụ:
+  # assets:
+  #   - assets/images/
+  #   - assets/icons/
+
+  # fonts:
+  #   - family: Roboto
+  #     fonts:
+  #       - asset: assets/fonts/Roboto-Regular.ttf
+  #       - asset: assets/fonts/Roboto-Bold.ttf
+  #         weight: 700
+
+---
+
+_**Assistant**_
+
+File `pubspec.yaml` của bạn đã có dòng:
+```yaml
+shared_preferences: ^2.5.3
+```
+Bạn chỉ cần chạy lệnh sau trong terminal để tải về package:
+```
+flutter pub get
+```
+Sau đó, lỗi `Target of URI doesn't exist: 'package:shared_preferences/shared_preferences'` sẽ hết.
+
+Nếu vẫn lỗi, hãy kiểm tra lại tên package phải đúng là `shared_preferences` và không có dấu cách thừa.
+
+---
+
+_**User**_
+
+vẫn lỗi [{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "uri_does_not_exist",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/uri_does_not_exist",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 8,
+	"message": "Target of URI doesn't exist: 'package:shared_preferences/shared_preferences'.\nTry creating the file referenced by the URI, or try using a URI for a file that does exist.",
+	"source": "dart",
+	"startLineNumber": 6,
+	"startColumn": 8,
+	"endLineNumber": 6,
+	"endColumn": 55,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "undefined_identifier",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/undefined_identifier",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 8,
+	"message": "Undefined name 'SharedPreferences'.\nTry correcting the name to one that is defined, or defining the name.",
+	"source": "dart",
+	"startLineNumber": 309,
+	"startColumn": 31,
+	"endLineNumber": 309,
+	"endColumn": 48,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "unused_element",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/unused_element",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 4,
+	"message": "The declaration '_showResetPasswordDialog' isn't referenced.\nTry removing the declaration of '_showResetPasswordDialog'.",
+	"source": "dart",
+	"startLineNumber": 171,
+	"startColumn": 16,
+	"endLineNumber": 171,
+	"endColumn": 40,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 48,
+	"startColumn": 30,
+	"endLineNumber": 48,
+	"endColumn": 37,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 61,
+	"startColumn": 30,
+	"endLineNumber": 61,
+	"endColumn": 37,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 66,
+	"startColumn": 28,
+	"endLineNumber": 66,
+	"endColumn": 35,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 91,
+	"startColumn": 30,
+	"endLineNumber": 91,
+	"endColumn": 37,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 103,
+	"startColumn": 30,
+	"endLineNumber": 103,
+	"endColumn": 37,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 108,
+	"startColumn": 28,
+	"endLineNumber": 108,
+	"endColumn": 35,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 141,
+	"startColumn": 30,
+	"endLineNumber": 141,
+	"endColumn": 37,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 156,
+	"startColumn": 30,
+	"endLineNumber": 156,
+	"endColumn": 37,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 161,
+	"startColumn": 28,
+	"endLineNumber": 161,
+	"endColumn": 35,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 252,
+	"startColumn": 29,
+	"endLineNumber": 252,
+	"endColumn": 36,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 259,
+	"startColumn": 28,
+	"endLineNumber": 259,
+	"endColumn": 35,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "curly_braces_in_flow_control_structures",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/curly_braces_in_flow_control_structures",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Statements in an if should be enclosed in a block.\nTry wrapping the statement in a block.",
+	"source": "dart",
+	"startLineNumber": 301,
+	"startColumn": 11,
+	"endLineNumber": 301,
+	"endColumn": 45,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "curly_braces_in_flow_control_structures",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/curly_braces_in_flow_control_structures",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Statements in an if should be enclosed in a block.\nTry wrapping the statement in a block.",
+	"source": "dart",
+	"startLineNumber": 303,
+	"startColumn": 11,
+	"endLineNumber": 303,
+	"endColumn": 39,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "curly_braces_in_flow_control_structures",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/curly_braces_in_flow_control_structures",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Statements in an if should be enclosed in a block.\nTry wrapping the statement in a block.",
+	"source": "dart",
+	"startLineNumber": 305,
+	"startColumn": 11,
+	"endLineNumber": 305,
+	"endColumn": 46,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "curly_braces_in_flow_control_structures",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/curly_braces_in_flow_control_structures",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Statements in an if should be enclosed in a block.\nTry wrapping the statement in a block.",
+	"source": "dart",
+	"startLineNumber": 306,
+	"startColumn": 42,
+	"endLineNumber": 306,
+	"endColumn": 71,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 313,
+	"startColumn": 32,
+	"endLineNumber": 313,
+	"endColumn": 39,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 321,
+	"startColumn": 13,
+	"endLineNumber": 321,
+	"endColumn": 20,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 325,
+	"startColumn": 32,
+	"endLineNumber": 325,
+	"endColumn": 39,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 344,
+	"startColumn": 30,
+	"endLineNumber": 344,
+	"endColumn": 37,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 349,
+	"startColumn": 28,
+	"endLineNumber": 349,
+	"endColumn": 35,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 487,
+	"startColumn": 29,
+	"endLineNumber": 487,
+	"endColumn": 36,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "use_build_context_synchronously",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/use_build_context_synchronously",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "Don't use 'BuildContext's across async gaps.\nTry rewriting the code to not use the 'BuildContext', or guard the use with a 'mounted' check.",
+	"source": "dart",
+	"startLineNumber": 492,
+	"startColumn": 48,
+	"endLineNumber": 492,
+	"endColumn": 55,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "sort_child_properties_last",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/sort_child_properties_last",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "The 'child' argument should be last in widget constructor invocations.\nTry moving the argument to the end of the argument list.",
+	"source": "dart",
+	"startLineNumber": 551,
+	"startColumn": 25,
+	"endLineNumber": 551,
+	"endColumn": 61,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "sort_child_properties_last",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/sort_child_properties_last",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "The 'child' argument should be last in widget constructor invocations.\nTry moving the argument to the end of the argument list.",
+	"source": "dart",
+	"startLineNumber": 581,
+	"startColumn": 25,
+	"endLineNumber": 581,
+	"endColumn": 57,
+	"origin": "extHost1"
+},{
+	"resource": "/D:/LapTrinhAndroid/AndroidOnline/food-app-be/food_app_flutter/lib/Page login/login_screen.dart",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"code": {
+		"value": "sort_child_properties_last",
+		"target": {
+			"$mid": 1,
+			"path": "/diagnostics/sort_child_properties_last",
+			"scheme": "https",
+			"authority": "dart.dev"
+		}
+	},
+	"severity": 2,
+	"message": "The 'child' argument should be last in widget constructor invocations.\nTry moving the argument to the end of the argument list.",
+	"source": "dart",
+	"startLineNumber": 633,
+	"startColumn": 29,
+	"endLineNumber": 633,
+	"endColumn": 66,
+	"origin": "extHost1"
+}]
+
+---
+
+_**Assistant**_
+
+Lỗi `"Target of URI doesn't exist: 'package:shared_preferences/shared_preferences'"` vẫn còn là do Flutter chưa nhận diện được package này.
+
+**Cách khắc phục:**
+
+1. **Kiểm tra lại tên package trong pubspec.yaml**  
+   Đảm bảo đúng là:
+   ```yaml
+   shared_preferences: ^2.5.3
+   ```
+
+2. **Chạy lại lệnh cài đặt package:**  
+   Mở terminal tại thư mục dự án và chạy:
+   ```
+   flutter pub get
+   ```
+
+3. **Kiểm tra lại đường dẫn import:**  
+   Đảm bảo đúng là:
+   ```dart
+   import 'package:shared_preferences/shared_preferences.dart';
+   ```
+
+4. **Kiểm tra thư mục dự án:**  
+   Đảm bảo bạn đang mở đúng thư mục gốc của dự án Flutter (nơi có pubspec.yaml).
+
+5. **Khởi động lại VS Code:**  
+   Đôi khi cần đóng VS Code và mở lại để nhận diện package mới cài.
+
+---
+
+Nếu đã làm hết mà vẫn lỗi, thử xóa thư mục `.dart_tool` và `pubspec.lock` rồi chạy lại:
+```
+flutter pub get
+```
+
+---
+
+**Tóm lại:**  
+- Đảm bảo pubspec.yaml đúng  
+- Chạy `flutter pub get`  
+- Đúng đường dẫn import  
+- Khởi động lại VS Code nếu cần
+
+Nếu vẫn lỗi, hãy gửi nội dung terminal khi chạy `flutter pub get` để kiểm tra thêm!
+
+---
+
+_**User**_
+
+kiểm tra tại sao khi sửa hồ sơ tên và số điện thoại nhấn lưu và đăng xuất đăng nhập lại báo sai gmail và password
+
+---
+
+_**Assistant**_
+
+Dựa vào code bạn gửi, có thể có **2 nguyên nhân chính** gây ra lỗi "sai gmail và password" sau khi sửa hồ sơ, lưu và đăng xuất đăng nhập lại:
+
+---
+
+### 1. **API cập nhật hồ sơ (PATCH) đang ghi đè lên trường email hoặc password**
+
+- Trong hàm `saveUser`, bạn chỉ gửi các trường `fullName`, `phone`, `gender` (không gửi email, password).
+- Tuy nhiên, nếu phía backend API PATCH `/users/:id` **cho phép cập nhật email hoặc password** và bạn gửi thêm các trường này (hoặc backend tự động cập nhật), có thể gây lỗi.
+- Nếu backend có bug, có thể nó đang ghi đè hoặc xóa trường email/password.
+
+**Cách kiểm tra:**
+- Xem lại API backend: Khi PATCH, có cho phép sửa email/password không? Nếu có, hãy kiểm tra lại logic backend.
+- In ra log response của API sau khi PATCH để xem dữ liệu trả về có đúng không.
+
+---
+
+### 2. **Token hoặc userId bị thay đổi hoặc mất hiệu lực**
+
+- Khi bạn cập nhật hồ sơ, nếu backend trả về token mới (hoặc userId mới), bạn cần lưu lại token mới vào `SharedPreferences`.
+- Nếu không, token cũ có thể không còn hợp lệ, dẫn đến lỗi đăng nhập.
+
+**Cách kiểm tra:**
+- Sau khi PATCH, kiểm tra response có trả về token mới không. Nếu có, hãy lưu lại token mới.
+- Đảm bảo trường email không bị đổi (vì bạn dùng email để đăng nhập).
+
+---
+
+### 3. **Trường hợp khác: Email bị đổi hoặc xóa trên backend**
+
+- Nếu backend cho phép đổi email, bạn sẽ không đăng nhập được bằng email cũ nữa.
+- Nếu trường email bị xóa hoặc null, đăng nhập sẽ báo sai tài khoản.
+
+---
+
+## **Cách khắc phục đề xuất**
+
+**1. Đảm bảo chỉ gửi các trường cho phép sửa lên API:**
+```dart
+final Map<String, dynamic> bodyMap = {};
+if (_controllers['fullName'] != null &&
+    _controllers['fullName']!.text.trim().isNotEmpty) {
+  bodyMap['fullName'] = _controllers['fullName']!.text.trim();
+}
+if (_controllers['phone'] != null &&
+    _controllers['phone']!.text.trim().isNotEmpty) {
+  bodyMap['phone'] = _controllers['phone']!.text.trim();
+}
+if (_controllers['gender'] != null &&
+    _controllers['gender']!.text.trim().isNotEmpty) {
+  bodyMap['gender'] = _controllers['gender']!.text.trim();
+}
+// KHÔNG gửi email hoặc password nếu không cho phép đổi!
+```
+
+**2. Kiểm tra lại backend PATCH API:**
+- Đảm bảo backend không cho phép đổi email/password qua API này (trừ khi bạn muốn).
+
+**3. Nếu backend trả về token mới sau khi cập nhật, hãy lưu lại:**
+```dart
+if (response.statusCode == 200) {
+  final data = jsonDecode(response.body);
+  if (data['token'] != null) {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('token', data['token']);
+  }
+  // ...
+}
+```
+
+---
+
+## **Tóm lại**
+- **Không gửi email/password lên API PATCH nếu không cho phép đổi.**
+- **Kiểm tra backend không tự động đổi hoặc xóa email/password.**
+- **Nếu backend trả về token mới sau khi cập nhật, hãy lưu lại token mới.**
+
+Nếu vẫn lỗi, hãy gửi thêm log response của API sau khi PATCH và sau khi đăng nhập lại để kiểm tra kỹ hơn!
+
+---
+
+_**User**_
+
+kiểm tra import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../Page login/login_screen.dart';
+
+class HoSo extends StatefulWidget {
+  const HoSo({super.key});
+
+  @override
+  State<HoSo> createState() => _HoSoState();
+}
+
+class _HoSoState extends State<HoSo> {
+  bool _loading = true;
+  bool _saving = false;
+  Map<String, dynamic>? _user;
+  final Map<String, TextEditingController> _controllers = {};
+
+  Future<void> fetchUser() async {
+    setState(() => _loading = true);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token') ?? '';
+      debugPrint('Token: $token');
+      // Giải mã userId từ token JWT
+      String? userId;
+      if (token.isNotEmpty) {
+        final parts = token.split('.');
+        if (parts.length == 3) {
+          final payload =
+              utf8.decode(base64Url.decode(base64Url.normalize(parts[1])));
+          final payloadMap = jsonDecode(payload);
+          userId = payloadMap['userId']?.toString();
+        }
+      }
+      if (userId == null || userId.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Không tìm thấy userId trong token!')),
+        );
+        setState(() => _loading = false);
+        return;
+      }
+      final endpoint =
+          'https://food-app-cweu.onrender.com/api/v1/users/$userId';
+      final response = await http.get(
+        Uri.parse(endpoint),
+        headers: token.isNotEmpty ? {'Authorization': 'Bearer $token'} : {},
+      );
+      debugPrint('API response: ${response.body}');
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        debugPrint('User data: ${data['data']}');
+        _user = data['data'] ?? {};
+        // Tạo controller cho tất cả các trường
+        _controllers.clear();
+        _user?.forEach((key, value) {
+          _controllers[key] =
+              TextEditingController(text: value?.toString() ?? '');
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Lỗi lấy thông tin: $e')),
+      );
+    }
+    setState(() => _loading = false);
+  }
+
+  Future<void> saveUser() async {
+    setState(() => _saving = true);
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token') ?? '';
+    // Giải mã userId từ token JWT
+    String? userId;
+    if (token.isNotEmpty) {
+      final parts = token.split('.');
+      if (parts.length == 3) {
+        final payload =
+            utf8.decode(base64Url.decode(base64Url.normalize(parts[1])));
+        final payloadMap = jsonDecode(payload);
+        userId = payloadMap['userId']?.toString();
+      }
+    }
+    if (userId == null || userId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Không tìm thấy userId trong token!')),
+      );
+      setState(() => _saving = false);
+      return;
+    }
+    final endpoint = 'https://food-app-cweu.onrender.com/api/v1/users/$userId';
+    // Chỉ gửi các trường có giá trị khác rỗng cho API
+    final Map<String, dynamic> bodyMap = {};
+    if (_controllers['fullName'] != null &&
+        _controllers['fullName']!.text.trim().isNotEmpty) {
+      bodyMap['fullName'] = _controllers['fullName']!.text.trim();
+    }
+    if (_controllers['phone'] != null &&
+        _controllers['phone']!.text.trim().isNotEmpty) {
+      bodyMap['phone'] = _controllers['phone']!.text.trim();
+    }
+    if (_controllers['gender'] != null &&
+        _controllers['gender']!.text.trim().isNotEmpty) {
+      bodyMap['gender'] = _controllers['gender']!.text.trim();
+    }
+    final body = jsonEncode(bodyMap);
+    try {
+      final response = await http.patch(
+        Uri.parse(endpoint),
+        headers: {
+          'Content-Type': 'application/json',
+          if (token.isNotEmpty) 'Authorization': 'Bearer $token',
+        },
+        body: body,
+      );
+      debugPrint('PATCH response: ${response.body}');
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Cập nhật thành công!')),
+        );
+        await fetchUser();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Lỗi: ${response.statusCode}')),
+        );
+        // Nếu lỗi, reset lại dữ liệu từ server
+        await fetchUser();
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Lỗi: $e')),
+      );
+      // Nếu lỗi, reset lại dữ liệu từ server
+      await fetchUser();
+    }
+    setState(() => _saving = false);
+  }
+
+  Future<void> deleteUser() async {
+    final endpoint = 'https://food-app-cweu.onrender.com/api/v1/users/me';
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token') ?? '';
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Xác nhận xóa tài khoản'),
+        content: const Text('Bạn có chắc chắn muốn xóa tài khoản này?'),
+        actions: [
+          TextButton(
+            child: const Text('Hủy'),
+            onPressed: () => Navigator.pop(context, false),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Xóa', style: TextStyle(color: Colors.white)),
+            onPressed: () => Navigator.pop(context, true),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true) return;
+    try {
+      final response = await http.delete(
+        Uri.parse(endpoint),
+        headers: token.isNotEmpty ? {'Authorization': 'Bearer $token'} : {},
+      );
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Đã xóa tài khoản!')),
+        );
+        // Chuyển về màn hình đăng nhập
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('/login', (route) => false);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Lỗi xóa: ${response.statusCode}')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Lỗi xóa: $e')),
+      );
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUser();
+  }
+
+  @override
+  void dispose() {
+    _controllers.forEach((key, controller) => controller.dispose());
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    List<Widget> children = [];
+    // Hiện gmail, không cho sửa
+    if (_controllers['email'] != null) {
+      children.add(TextField(
+        controller: _controllers['email'],
+        decoration: InputDecoration(
+          labelText: 'Gmail',
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+        readOnly: true,
+      ));
+      children.add(SizedBox(height: 16));
+    }
+    // Hiện thị fullName nếu có
+    if (_controllers['fullName'] != null) {
+      children.add(TextField(
+        controller: _controllers['fullName'],
+        decoration: InputDecoration(
+          labelText: 'Họ và tên',
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      ));
+      children.add(SizedBox(height: 16));
+    }
+    // Hiện ngày tạo
+    if (_controllers['createdAt'] != null) {
+      children.add(TextField(
+        controller: _controllers['createdAt'],
+        decoration: InputDecoration(
+          labelText: 'Ngày tạo',
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+        readOnly: true,
+      ));
+      children.add(SizedBox(height: 16));
+    }
+    // Hiện ngày cập nhật
+    if (_controllers['updatedAt'] != null) {
+      children.add(TextField(
+        controller: _controllers['updatedAt'],
+        decoration: InputDecoration(
+          labelText: 'Ngày cập nhật',
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+        readOnly: true,
+      ));
+      children.add(SizedBox(height: 24));
+    }
+    // Hiện thị tên đăng nhập
+    if (_controllers['userName'] != null) {
+      children.add(TextField(
+        controller: _controllers['userName'],
+        decoration: InputDecoration(
+          labelText: 'Tên đăng nhập',
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      ));
+      children.add(SizedBox(height: 16));
+    } else if (_controllers['username'] != null) {
+      children.add(TextField(
+        controller: _controllers['username'],
+        decoration: InputDecoration(
+          labelText: 'Tên đăng nhập',
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      ));
+      children.add(SizedBox(height: 16));
+    } else if (_controllers['tenDangNhap'] != null) {
+      children.add(TextField(
+        controller: _controllers['tenDangNhap'],
+        decoration: InputDecoration(
+          labelText: 'Tên đăng nhập',
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      ));
+      children.add(SizedBox(height: 16));
+    }
+    // Hiện thị tên
+    if (_controllers['name'] != null) {
+      children.add(TextField(
+        controller: _controllers['name'],
+        decoration: InputDecoration(
+          labelText: 'Tên',
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      ));
+      children.add(SizedBox(height: 16));
+    }
+    // Hiện thị số điện thoại
+    if (_controllers['phone'] != null) {
+      children.add(TextField(
+        controller: _controllers['phone'],
+        decoration: InputDecoration(
+          labelText: 'Số điện thoại',
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      ));
+      children.add(SizedBox(height: 16));
+    }
+    // Hiện thị trạng thái
+    if (_controllers['status'] != null) {
+      children.add(TextField(
+        controller: _controllers['status'],
+        decoration: InputDecoration(
+          labelText: 'Trạng thái',
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      ));
+      children.add(SizedBox(height: 16));
+    }
+    // Hiện giới tính
+    if (_controllers['gender'] != null) {
+      children.add(TextField(
+        controller: _controllers['gender'],
+        decoration: InputDecoration(
+          labelText: 'Giới tính',
+        ),
+      ));
+      children.add(SizedBox(height: 16));
+    }
+    // Hiện thị địa chỉ (ưu tiên address, nếu không có thì diaChi, nếu không có thì location)
+    if (_controllers['address'] != null) {
+      children.add(TextField(
+        controller: _controllers['address'],
+        decoration: InputDecoration(
+          labelText: 'Địa chỉ',
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      ));
+      children.add(SizedBox(height: 16));
+    } else if (_controllers['diaChi'] != null) {
+      children.add(TextField(
+        controller: _controllers['diaChi'],
+        decoration: InputDecoration(
+          labelText: 'Địa chỉ',
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      ));
+      children.add(SizedBox(height: 16));
+    } else if (_controllers['location'] != null) {
+      children.add(TextField(
+        controller: _controllers['location'],
+        decoration: InputDecoration(
+          labelText: 'Địa chỉ',
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      ));
+      children.add(SizedBox(height: 16));
+    }
+    // Nút lưu hồ sơ
+    children.add(Row(
+      children: [
+        Expanded(
+          child: ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+                padding: EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12))),
+            icon: _saving
+                ? SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                        color: Colors.white, strokeWidth: 2),
+                  )
+                : Icon(Icons.save, color: Colors.white),
+            label: Text('Lưu hồ sơ',
+                style: TextStyle(color: Colors.white, fontSize: 18)),
+            onPressed: _saving ? null : saveUser,
+          ),
+        ),
+      ],
+    ));
+    // Nút đăng xuất
+    children.add(SizedBox(height: 16));
+    children.add(Row(
+      children: [
+        Expanded(
+          child: ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                padding: EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12))),
+            icon: Icon(Icons.logout, color: Colors.white),
+            label: Text('Đăng xuất',
+                style: TextStyle(color: Colors.white, fontSize: 18)),
+            onPressed: () async {
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text('Xác nhận đăng xuất'),
+                  content: Text('Bạn có chắc chắn muốn đăng xuất?'),
+                  actions: [
+                    TextButton(
+                      child: Text('Hủy'),
+                      onPressed: () => Navigator.pop(context, false),
+                    ),
+                    ElevatedButton(
+                      style:
+                          ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                      child: Text('Đăng xuất',
+                          style: TextStyle(color: Colors.white)),
+                      onPressed: () => Navigator.pop(context, true),
+                    ),
+                  ],
+                ),
+              );
+              if (confirm == true) {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.remove('token');
+                if (mounted) {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(
+                        builder: (context) => const LoginScreen()),
+                    (route) => false,
+                  );
+                }
+              }
+            },
+          ),
+        ),
+      ],
+    ));
+    return Scaffold(
+      appBar: AppBar(title: Text('Hồ sơ người dùng')),
+      body: _loading
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: children,
+              ),
+            ),
+    );
+  }
+}
+
+
+---
+
+_**Assistant**_
+
+Các import trong file này là **đúng và đầy đủ** cho chức năng hiện tại:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../Page login/login_screen.dart';
+```
+
+- `flutter/material.dart`: UI Flutter.
+- `http`: Gọi API.
+- `dart:convert`: Xử lý JSON, base64.
+- `shared_preferences`: Lưu/lấy token.
+- `'../Page `login_screen.dart`'`: Để chuyển về màn hình đăng nhập.
+
+Bạn không cần sửa gì ở phần import của file `lib/pages_user/ho_so.dart`.
+
+---
+
+_**User**_
+
+nhưng sao sửa tên hay số điện thoại đăng xuất nhưng không đăng nhập đc
+
+---
+
+_**Assistant**_
+
+Dựa vào code bạn gửi, **nguyên nhân có thể là do backend API khi cập nhật hồ sơ đã làm thay đổi hoặc làm mất trường `email` hoặc `password` của user**. Khi đó, sau khi bạn sửa tên hoặc số điện thoại, đăng xuất và đăng nhập lại bằng email/password cũ sẽ bị lỗi.
+
+### Phân tích chi tiết:
+- **Hàm `saveUser` chỉ gửi các trường `fullName`, `phone`, `gender` lên API** (không gửi email, password).
+- **Trường email được lấy từ token và không cho sửa trên giao diện**.
+- **Sau khi cập nhật, bạn vẫn dùng email và password cũ để đăng nhập**.
+
+### Nguyên nhân thường gặp:
+1. **API backend PATCH `/users/:id` đang ghi đè hoặc xóa trường email hoặc password**  
+   → Nếu backend không giữ lại các trường không gửi lên (ví dụ: chỉ nhận các trường từ body và ghi đè toàn bộ user), trường email hoặc password sẽ bị mất.
+
+2. **Backend yêu cầu gửi đủ các trường khi PATCH, nếu không sẽ bị null**  
+   → Nếu API backend không merge mà replace, bạn phải gửi đủ cả email, password, ... khi PATCH.
+
+### Cách kiểm tra & khắc phục:
+
+#### 1. **Kiểm tra response trả về sau khi PATCH**
+Thêm debug log sau khi PATCH:
+```dart
+debugPrint('PATCH response: ${response.body}');
+```
+Kiểm tra xem trường `email` trong user trả về có bị mất hoặc null không.
+
+#### 2. **Kiểm tra lại API backend**
+- Nếu backend dùng kiểu update "replace" (thay toàn bộ user bằng body mới), bạn phải gửi đủ các trường (bao gồm email, password).
+- Nếu backend dùng kiểu update "merge" (chỉ update trường gửi lên), thì code hiện tại là đúng.
+
+#### 3. **Khắc phục tạm thời (nếu backend yêu cầu đủ trường)**
+Bạn có thể gửi thêm trường email khi PATCH như sau:
+```dart
+if (_controllers['email'] != null &&
+    _controllers['email']!.text.trim().isNotEmpty) {
+  bodyMap['email'] = _controllers['email']!.text.trim();
+}
+```
+**Lưu ý:** Không nên gửi password nếu không đổi password.
+
+#### 4. **Đề xuất tốt nhất**
+- **Sửa backend**: API PATCH chỉ nên cập nhật các trường gửi lên, không được xóa các trường còn lại.
+- Nếu không sửa được backend, khi PATCH bạn phải gửi đủ các trường quan trọng (email, ...).
+
+---
+
+## **Tóm lại**
+- **Lỗi này chủ yếu do backend ghi đè user và làm mất email hoặc password.**
+- **Bạn nên kiểm tra lại API backend hoặc gửi đủ trường email khi PATCH.**
+
+---
+
+### **Ví dụ sửa nhanh trên Flutter (nếu cần gửi thêm email):**
+````dart
+// ...existing code...
+if (_controllers['email'] != null &&
+    _controllers['email']!.text.trim().isNotEmpty) {
+  bodyMap['email'] = _controllers['email']!.text.trim();
+}
+// ...existing code...
+````
+
+**Nhưng tốt nhất là sửa lại backend để PATCH chỉ update các trường gửi lên, không xóa các trường còn lại!**
+
+---
+
+_**User**_
+
+làm cho tôi
+
+---
+
+_**Assistant**_
+
+Bạn hãy **bổ sung gửi trường email khi cập nhật hồ sơ** để tránh backend làm mất email (nếu backend yêu cầu đủ trường).  
+Chỉ cần thêm đoạn sau vào hàm `saveUser`:
+
+````dart
+// ...existing code...
+final Map<String, dynamic> bodyMap = {};
+if (_controllers['fullName'] != null &&
+    _controllers['fullName']!.text.trim().isNotEmpty) {
+  bodyMap['fullName'] = _controllers['fullName']!.text.trim();
+}
+if (_controllers['phone'] != null &&
+    _controllers['phone']!.text.trim().isNotEmpty) {
+  bodyMap['phone'] = _controllers['phone']!.text.trim();
+}
+if (_controllers['gender'] != null &&
+    _controllers['gender']!.text.trim().isNotEmpty) {
+  bodyMap['gender'] = _controllers['gender']!.text.trim();
+}
+// BỔ SUNG: Gửi cả email để backend không làm mất
+if (_controllers['email'] != null &&
+    _controllers['email']!.text.trim().isNotEmpty) {
+  bodyMap['email'] = _controllers['email']!.text.trim();
+}
+// ...existing code...
+````
+
+**Sau khi sửa:**  
+- Khi bạn sửa tên hoặc số điện thoại và nhấn lưu, trường email vẫn được giữ lại trên backend.
+- Đăng xuất và đăng nhập lại sẽ không bị lỗi "sai gmail".
+
+**Lưu ý:**  
+- Nếu backend vẫn làm mất password, bạn cần kiểm tra lại API backend.
+- Nếu chỉ cần sửa tên/số điện thoại mà vẫn bị lỗi đăng nhập, chắc chắn backend đang replace toàn bộ user bằng body PATCH, nên phải gửi đủ các trường quan trọng.
+
+Bạn chỉ cần thêm đoạn trên vào đúng vị trí trong hàm `saveUser` là xong!
+
+---
+
+_**User**_
+
+khi sửa và cập nhật đăng xuất ra rồi không đăng nhập đc nữa
+
+---
+
+_**Assistant**_
+
+Bạn đã **gửi cả trường email khi cập nhật hồ sơ** nhưng vẫn bị lỗi không đăng nhập lại được sau khi sửa và đăng xuất. Điều này cho thấy **backend của bạn khi PATCH user đã làm mất hoặc thay đổi trường password** (vì bạn không gửi password lên khi cập nhật).
+
+### Nguyên nhân:
+- Backend PATCH `/users/:id` có thể đang **replace toàn bộ user** bằng dữ liệu bạn gửi lên, nên nếu không gửi password thì password sẽ bị null hoặc mất.
+- Khi đó, đăng nhập lại bằng email và password cũ sẽ báo sai.
+
+---
+
+## **Cách khắc phục tạm thời (trên Flutter)**
+**Gửi cả trường password cũ khi cập nhật hồ sơ** (nếu bạn có lưu password cũ, ví dụ trong biến hoặc controller).  
+Tuy nhiên, **không nên lưu password trên app** vì lý do bảo mật.
+
+### **Khuyến nghị tốt nhất**
+- **Sửa lại backend**: Khi PATCH user, chỉ update các trường gửi lên, không được xóa các trường còn lại (đặc biệt là password).
+- Nếu không sửa được backend, bạn phải gửi đủ cả email và password khi PATCH user.
+
+---
+
+## **Ví dụ gửi thêm password (nếu bạn có lưu password cũ):**
+```dart
+if (_controllers['password'] != null &&
+    _controllers['password']!.text.trim().isNotEmpty) {
+  bodyMap['password'] = _controllers['password']!.text.trim();
+}
+```
+> **Nhưng thông thường bạn không nên lưu password trên app!**
+
+---
+
+## **Tóm lại**
+- **Lỗi này là do backend ghi đè toàn bộ user khi PATCH, làm mất password.**
+- **Bạn cần sửa backend để PATCH chỉ update các trường gửi lên, không xóa password/email.**
+- **Nếu không sửa được backend, bạn phải gửi đủ trường password khi PATCH (không an toàn).**
+
+---
+
+**Giải pháp an toàn và đúng:**  
+> **Sửa lại API backend để PATCH chỉ update các trường gửi lên, không xóa các trường còn lại!**
+
+Nếu bạn cần hướng dẫn sửa backend NodeJS/Express/Mongoose, hãy gửi code backend PATCH user để mình hướng dẫn chi tiết.
+
+---
+
+_**User**_
+
+tôi không sửa mật khẩu hay gmail nhưng khi sửa tên hay số điện thoại đăng xuất nhưng không đăng nhập đc 
+
+---
+
+_**Assistant**_
+
+Bạn không sửa mật khẩu hay gmail, nhưng sau khi sửa tên hoặc số điện thoại rồi đăng xuất thì không đăng nhập lại được và báo "Invalid email or password".  
+**Nguyên nhân gần như chắc chắn là do backend API PATCH user đang ghi đè toàn bộ user bằng dữ liệu bạn gửi lên, làm mất trường password (và có thể cả các trường khác).**
+
+### Vì sao?
+- Khi bạn PATCH chỉ gửi các trường: fullName, phone, gender, email (không gửi password).
+- Nếu backend không merge mà replace, trường password trên database sẽ bị null hoặc mất.
+- Đăng nhập lại sẽ báo "Invalid email or password" vì password đã bị xóa.
+
+---
+
+## **Cách khắc phục đúng nhất**
+
+### 1. **Sửa backend (nên làm)**
+- API PATCH user phải **merge** dữ liệu mới vào user cũ, chỉ update các trường gửi lên, không xóa các trường còn lại.
+- Nếu dùng NodeJS + Mongoose, hãy dùng `{ new: true, runValidators: true }` và chỉ update các trường có trong body.
+
+**Ví dụ NodeJS/Express:**
+```js
+// PATCH /users/:id
+router.patch('/users/:id', async (req, res) => {
+  const updates = req.body;
+  const user = await User.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true });
+  res.json data: user });
+});
+```
+> **Không dùng kiểu replace toàn bộ document!**
+
+---
+
+### 2. **Tạm thời (nếu không sửa được backend)**
+- Khi PATCH, bạn **phải gửi đủ cả password** (và các trường quan trọng khác) lên backend.
+- Tuy nhiên, **không nên lưu password trên app** vì lý do bảo mật.
+
+---
+
+## **Tóm lại**
+- **Lỗi này là do backend ghi đè toàn bộ user khi PATCH, làm mất password.**
+- **Bạn cần sửa backend để PATCH chỉ update các trường gửi lên, không xóa các trường còn lại.**
+- Nếu không sửa được backend, bạn phải gửi đủ password khi PATCH (không an toàn).
+
+---
+
+**Bạn nên báo cho người làm backend sửa lại API PATCH user.**  
+Nếu bạn là người làm backend, hãy gửi code PATCH user để mình hướng dẫn sửa chi tiết!
+
+---
+
+_**User**_
+
+kiểm tra cho tôi khi đặt hàng đơn hàng sẽ được hiện thị ở trang đơn hàng 
+
+---
+
+_**Assistant**_
+
+Dựa vào code và API bạn gửi, **khi đặt hàng xong**, đơn hàng **chưa tự động hiển thị ở trang Đơn hàng** (`OrderPage`) vì bạn chỉ chuyển trang bằng:
+```dart
+Navigator.of(context).pushReplacementNamed('/donhang');
+```
+Nhưng bạn **không truyền dữ liệu đơn hàng mới vừa đặt sang** hoặc không gọi API để lấy danh sách đơn hàng từ server.
+
+---
+
+## **Cách làm đúng để hiển thị đơn hàng mới**
+
+### **1. Khi chuyển sang trang Đơn hàng, cần lấy danh sách đơn hàng từ API**
+Bạn nên gọi API `GET /api/v1/orders` để lấy danh sách đơn hàng của user và hiển thị.
+
+### **2. Ví dụ sửa nhanh cho OrderPage**
+
+Thay vì truyền `initialOrders`, hãy fetch từ API:
+
+````dart
+class OrderPage extends StatefulWidget {
+  final String paymentMethod;
+  const OrderPage({super.key, this.paymentMethod = 'COD'});
+
+  @override
+  State<OrderPage> createState() => _OrderPageState();
+}
+
+class _OrderPageState extends State<OrderPage> {
+  List<Map<String, dynamic>> orders = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchOrders();
+  }
+
+  Future<void> fetchOrders() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    if (token == null) return;
+    final response = await http.get(
+      Uri.parse('https://food-app-cweu.onrender.com/api/v1/orders'),
+ headers: {'Authorization': 'Bearer $token'},
+    );
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      setState(() {
+        orders = List<Map<String, dynamic>>.from(data['data'] ?? []);
+      });
+    }
+  }
+
+  // ...giữ nguyên build và các hàm khác...
+}
+````
+
+### **3. Khi đặt hàng xong, chuyển sang OrderPage**
+```dart
+Navigator.of(context).pushReplacement(
+  MaterialPageRoute(builder: (context) => const OrderPage()),
+);
+```
+
+---
+
+## **Tóm lại**
+- **Sau khi đặt hàng, cần fetch lại danh sách đơn hàng từ API để hiển thị đơn hàng mới.**
+- **Không nên chỉ truyền biến cục bộ, mà nên lấy từ server để luôn đồng bộ.**
+
+Nếu bạn cần code chi tiết hơn cho phần fetch đơn hàng, hãy hỏi tiếp!
+
+---
+
+_**User**_
+
+cập nhật cho tôi import 'package:flutter/material.dart';
+import 'home.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+// ...existing code...
+
+class CartPage extends StatefulWidget {
+  final Map<String, dynamic>? food;
+  final int? quantity;
+  static final List<Map<String, dynamic>> globalCartItems = [];
+  const CartPage({Key? key, this.food, this.quantity}) : super(key: key);
+
+  @override
+  State<CartPage> createState() => _CartPageState();
+}
+
+class _CartPageState extends State<CartPage> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _notesController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  List<Map<String, dynamic>> cartItems = [];
+  String paymentMethod = 'COD';
+
+  int get totalPrice {
+    int sum = 0;
+    for (var item in cartItems) {
+      sum += ((item['price'] ?? 0) as num).toInt() *
+          ((item['quantity'] ?? 1) as int);
+    }
+    return sum;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Nếu có món mới được truyền vào, thêm vào giỏ hàng toàn cục
+    if (widget.food != null && widget.quantity != null) {
+      CartPage.globalCartItems.add({
+        'name': widget.food!['title'] ?? 'Không tên',
+        'price': widget.food!['price'] ?? 0,
+        'quantity': widget.quantity,
+        'thumbnail': widget.food!['thumbnail'],
+      });
+    }
+    cartItems = List<Map<String, dynamic>>.from(CartPage.globalCartItems);
+  }
+
+  void removeItem(int index) {
+    setState(() {
+      CartPage.globalCartItems.removeAt(index);
+      cartItems = List<Map<String, dynamic>>.from(CartPage.globalCartItems);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Giỏ hàng'),
+        backgroundColor: Colors.orange,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.shopping_cart),
+            tooltip: 'Giỏ hàng',
+            onPressed: () {},
+          ),
+        ],
+      ),
+      body: cartItems.isEmpty
+          ? const Center(child: Text('Chưa có món nào trong giỏ hàng'))
+          : Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: cartItems.length,
+                      itemBuilder: (context, index) {
+                        final item = cartItems[index];
+                        return Card(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
+                          child: ListTile(
+                            leading: item['thumbnail'] != null
+                                ? CircleAvatar(
+                                    backgroundImage:
+                                        NetworkImage(item['thumbnail']),
+                                    backgroundColor: Colors.orange[100],
+                                  )
+                                : CircleAvatar(
+                                    backgroundColor: Colors.orange[100],
+                                    child: const Icon(Icons.fastfood,
+                                        color: Colors.orange),
+                                  ),
+                            title: Text(item['name']),
+                            subtitle: Row(
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.remove_circle_outline,
+                                      color: Colors.orange),
+                                  onPressed: () {
+                                    setState(() {
+                                      if (item['quantity'] > 1) {
+                                        item['quantity']--;
+                                        CartPage.globalCartItems[index]
+                                            ['quantity'] = item['quantity'];
+                                      }
+                                    });
+                                  },
+                                ),
+                                Text('Số lượng: ${item['quantity']}'),
+                                IconButton(
+                                  icon: const Icon(Icons.add_circle_outline,
+                                      color: Colors.orange),
+                                  onPressed: () {
+                                    setState(() {
+                                      item['quantity']++;
+                                      CartPage.globalCartItems[index]
+                                          ['quantity'] = item['quantity'];
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                            trailing: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text('${item['price']}đ'),
+                                IconButton(
+                                  icon: const Icon(Icons.delete,
+                                      color: Colors.red),
+                                  onPressed: () => removeItem(index),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Tổng tiền: ${totalPrice}đ',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Colors.red)),
+                        const SizedBox(height: 8),
+                        Text('Phương thức thanh toán:',
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        Row(
+                          children: [
+                            Radio<String>(
+                              value: 'COD',
+                              groupValue: paymentMethod,
+                              onChanged: (value) {
+                                setState(() {
+                                  paymentMethod = value!;
+                                });
+                              },
+                            ),
+                            const Text('COD'),
+                            Radio<String>(
+                              value: 'Bank',
+                              groupValue: paymentMethod,
+                              onChanged: (value) {
+                                setState(() {
+                                  paymentMethod = value!;
+                                });
+                              },
+                            ),
+                            const Text('Chuyển khoản'),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          controller: _nameController,
+                          decoration: const InputDecoration(
+                              labelText: 'Tên người nhận'),
+                          validator: (value) => value == null || value.isEmpty
+                              ? 'Vui lòng nhập tên'
+                              : null,
+                        ),
+                        TextFormField(
+                          controller: _phoneController,
+                          decoration:
+                              const InputDecoration(labelText: 'Số điện thoại'),
+                          keyboardType: TextInputType.phone,
+                          validator: (value) => value == null || value.isEmpty
+                              ? 'Vui lòng nhập số điện thoại'
+                              : null,
+                        ),
+                        TextFormField(
+                          controller: _addressController,
+                          decoration: const InputDecoration(
+                              labelText: 'Địa chỉ giao hàng'),
+                          validator: (value) => value == null || value.isEmpty
+                              ? 'Vui lòng nhập địa chỉ'
+                              : null,
+                        ),
+                        TextFormField(
+                          controller: _notesController,
+                          decoration: const InputDecoration(
+                              labelText: 'Ghi chú (tuỳ chọn)'),
+                        ),
+                        const SizedBox(height: 8),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.orange),
+                          onPressed: () async {
+                            if (cartItems.isEmpty) return;
+                            if (_formKey.currentState?.validate() != true)
+                              return;
+
+                            // Lấy token đăng nhập
+                            final prefs = await SharedPreferences.getInstance();
+                            final token = prefs.getString('token');
+                            if (token == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('Bạn chưa đăng nhập!')),
+                              );
+                              return;
+                            }
+                            final orderData = {
+                              'items': cartItems
+                                  .map((item) => {
+                                        'quantity': item['quantity'].toString(),
+                                        'title': item['name'],
+                                        'thumbnail': item['thumbnail'],
+                                        'price': item['price'].toString(),
+                                      })
+                                  .toList(),
+                              'restaurantId':
+                                  '67757705-3181-4524-9bc2-2ae994102462',
+                              'paymentMethod': 'cod',
+                              'status': 'pending',
+                              'address': _addressController.text.trim(),
+                              'notes': _notesController.text.trim().isEmpty
+                                  ? null
+                                  : _notesController.text.trim(),
+                              'phone': _phoneController.text.trim(),
+                              'name': _nameController.text.trim(),
+                            };
+
+// Debug print before sending
+                            debugPrint(
+                                'Sending order data: ${jsonEncode(orderData)}');
+
+                            try {
+                              final response = await http.post(
+                                Uri.parse(
+                                    'https://food-app-cweu.onrender.com/api/v1/orders'),
+                                headers: {
+                                  'Content-Type': 'application/json',
+                                  'Authorization': 'Bearer $token',
+                                },
+                                body: jsonEncode(orderData),
+                              );
+
+                              debugPrint(
+                                  'Response status: ${response.statusCode}');
+                              debugPrint('Response body: ${response.body}');
+
+                              if (response.statusCode == 201 ||
+                                  response.statusCode == 200) {
+                                // Success handling
+                                setState(() {
+                                  CartPage.globalCartItems.clear();
+                                  cartItems.clear();
+                                });
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text('Đặt hàng thành công!')),
+                                );
+                                Navigator.of(context)
+                                    .pushReplacementNamed('/donhang');
+                              } else {
+                                // Error handling with more details
+                                final error = jsonDecode(response.body);
+                                debugPrint('Error details: $error');
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(
+                                          'Đặt hàng thất bại: ${error['message']}')),
+                                );
+                              }
+                            } catch (e) {
+                              debugPrint('Exception while creating order: $e');
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Lỗi kết nối: $e')),
+                              );
+                            }
+                          },
+                          child: const Text('Đặt hàng'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+      bottomNavigationBar: null,
+    );
+  }
+}
+
+class OrderPage extends StatefulWidget {
+  final String paymentMethod;
+  final List<Map<String, dynamic>>? initialOrders;
+  const OrderPage({super.key, this.paymentMethod = 'COD', this.initialOrders});
+
+  @override
+  State<OrderPage> createState() => _OrderPageState();
+}
+
+class _OrderPageState extends State<OrderPage> {
+  late List<Map<String, dynamic>> orders;
+
+  final List<String> statusList = [
+    'Chờ xác nhận',
+    'Đã xác nhận',
+    'Đang giao',
+    'Đã giao',
+    'Đã hủy',
+  ];
+
+  void updateStatus(int index, String newStatus) {
+    setState(() {
+      orders[index]['status'] = newStatus;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    orders = widget.initialOrders ?? [];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Đơn hàng'),
+        backgroundColor: Colors.orange,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.shopping_cart),
+            tooltip: 'Giỏ hàng',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const CartPage()),
+              );
+            },
+          ),
+        ],
+      ),
+      body: orders.isEmpty
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Chưa có đơn nào'),
+                  const SizedBox(height: 16),
+                  Text(
+                      'Phương thức thanh toán: ${widget.paymentMethod == 'COD' ? 'COD' : 'Chuyển khoản'}'),
+                ],
+              ),
+            )
+          : ListView.builder(
+              itemCount: orders.length,
+              itemBuilder: (context, index) {
+                final order = orders[index];
+                return Card(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  child: ListTile(
+                    title: Text('Mã đơn: ${order['id']}'),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Tổng tiền: ${order['total']}đ'),
+                        Text(
+                            'Phương thức thanh toán: ${order['paymentMethod'] == 'COD' ? 'COD' : 'Chuyển khoản'}'),
+                        Row(
+                          children: [
+                            const Text('Trạng thái: '),
+                            DropdownButton<String>(
+                              value: order['status'],
+                              items: statusList
+                                  .map((status) => DropdownMenuItem(
+                                        value: status,
+                                        child: Text(status),
+                                      ))
+                                  .toList(),
+                              onChanged: (newStatus) {
+                                if (newStatus != null) {
+                                  updateStatus(index, newStatus);
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+    );
+  }
+}
+
+
+---
+
+_**Assistant**_
+
 
 
 ---

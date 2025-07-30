@@ -316,15 +316,24 @@ class _LoginScreenState extends State<LoginScreen> {
           final role =
               user['role'] ?? user['userRole'] ?? user['type'] ?? 'user';
           // ...existing code...
+          // ...existing code...
           if (role == 'admin') {
-            Navigator.pushReplacement(context,
-                MaterialPageRoute(builder: (context) => const QuanLyThongKe()));
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AdminHome(
+                  userRole: role,
+                  userEmail: user['email'] ?? '',
+                ),
+              ),
+            );
           } else {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => const HomeUser()),
             );
           }
+// ...existing code...
 // ...existing code...
         } else {
           ScaffoldMessenger.of(context).showSnackBar(

@@ -30,8 +30,8 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.grey[100],
         textTheme: const TextTheme(bodyMedium: TextStyle(fontSize: 16)),
       ),
-      // home: const LoginScreen(),
-      home: AdminHome(userRole: 'admin'),
+      home: const LoginScreen(),
+      // home: AdminHome(userRole: 'admin'),
       routes: {
         '/donhang': (context) => const MonAnYeuThich(),
         // ...add other routes if needed...

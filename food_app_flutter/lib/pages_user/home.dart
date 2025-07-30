@@ -4,7 +4,8 @@ import 'dart:convert';
 import 'cart_page.dart';
 
 class TrangHome extends StatefulWidget {
-  const TrangHome({super.key});
+  final void Function(int quantity)? onAddToCart;
+  const TrangHome({Key? key, this.onAddToCart}) : super(key: key);
 
   @override
   State<TrangHome> createState() => _TrangHomeState();
@@ -159,7 +160,8 @@ class _TrangHomeState extends State<TrangHome> {
           surfaceTintColor: Colors.transparent,
         ),
         body: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(
+              horizontal: 8, vertical: 16), // Sửa lại padding
           children: [
             // Chào mừng user
             if (userName != null && userName!.isNotEmpty)
@@ -174,7 +176,7 @@ class _TrangHomeState extends State<TrangHome> {
                 child: Text(
                   'Xin chào, $userName!',
                   style: const TextStyle(
-                    color: Colors.deepOrange,
+                    color: Color.fromARGB(255, 17, 16, 15),
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
@@ -870,7 +872,7 @@ class _TrangHomeState extends State<TrangHome> {
             ),
             // Thông tin liên hệ và ưu đãi
             Container(
-              width: double.infinity,
+              // width: double.infinity,
               padding: const EdgeInsets.all(16),
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
