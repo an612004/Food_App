@@ -17,6 +17,8 @@ dependencies:
   fl_chart: ^0.64.0
   # Để thực hiện các yêu cầu HTTP (gọi API)
   http: ^1.2.1
+  #socket 
+  socket_io_client: ^2.0.0-beta.4-nullsafety.0
   # Quản lý trạng thái với Riverpod
   flutter_riverpod: ^2.6.1
   image_picker: ^1.1.2

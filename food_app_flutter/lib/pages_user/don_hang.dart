@@ -2,25 +2,26 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:food_app_flutter/main.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 // Danh sách trạng thái đơn hàng
 final List<String> statusList = [
   'Tất cả',
   'Chờ xác nhận',
-  'Đã xác nhận',
-  'Đang giao',
-  'Đã giao',
+  'Đang chuẩn bị',
+  'Hoàn thành',
+  'Thanh toán',
   'Đã hủy',
 ];
 
-class MonAnYeuThich extends StatefulWidget {
+class MonAnYeuThich extends ConsumerStatefulWidget {
   const MonAnYeuThich({super.key});
 
   @override
-  State<MonAnYeuThich> createState() => _MonAnYeuThichState();
+  ConsumerState<MonAnYeuThich> createState() => _MonAnYeuThichState();
 }
 
-class _MonAnYeuThichState extends State<MonAnYeuThich> {
+class _MonAnYeuThichState extends ConsumerState<MonAnYeuThich> {
   List<Map<String, dynamic>> orders = [];
   bool isLoading = true;
   String? userId;
@@ -30,6 +31,22 @@ class _MonAnYeuThichState extends State<MonAnYeuThich> {
   void initState() {
     super.initState();
     fetchOrders();
+
+    final socketService = ref.read(socketServiceProvider).socket;
+  socketService.on('order:updated', (data) {
+    print('Nhận socket order:updated');
+    if (!mounted) return;
+
+    final updatedOrder = data as Map<String, dynamic>;
+    setState(() {
+      // Tìm và cập nhật đơn hàng trong danh sách
+      final index = orders.indexWhere((o) =>
+          o['id'] == updatedOrder['id'] || o['_id'] == updatedOrder['_id']);
+      if (index != -1) {
+        orders[index] = updatedOrder;
+      }
+    });
+  });
   }
 
   // Lấy token từ SharedPreferences

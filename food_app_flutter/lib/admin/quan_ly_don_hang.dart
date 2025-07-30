@@ -1,28 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:food_app_flutter/services/socket_service.dart';
+import 'package:food_app_flutter/main.dart';
 
-class QuanLyDonHang extends StatefulWidget {
+class QuanLyDonHang extends ConsumerStatefulWidget {
   const QuanLyDonHang({super.key});
 
   @override
-  State<QuanLyDonHang> createState() => _QuanLyDonHangState();
+  ConsumerState<QuanLyDonHang> createState() => _QuanLyDonHangState();
 }
 
-class _QuanLyDonHangState extends State<QuanLyDonHang> {
+class _QuanLyDonHangState extends ConsumerState<QuanLyDonHang> {
   List<dynamic> _orders = [];
   final List<String> _statuses = [
     'Tất cả',
     'Chờ xác nhận',
     'Đang giao',
     'Hoàn thành',
+    'paid',
     'Đã hủy'
   ];
   // Status code từ API
   final List<String> _orderStatusList = [
     'pending', // Chờ xác nhận
     'preparing', // Đang giao
-    'completed', // Hoàn thành
+    'done', // Hoàn thành
+    'paid',
     'cancelled', // Đã hủy
   ];
 
@@ -33,8 +38,10 @@ class _QuanLyDonHangState extends State<QuanLyDonHang> {
         return 'Chờ xác nhận';
       case 'preparing':
         return 'Đang giao';
-      case 'completed':
+      case 'done':
         return 'Hoàn thành';
+      case 'paid':
+        return 'Thanh toán';
       case 'cancelled':
         return 'Đã hủy';
       default:
@@ -49,7 +56,9 @@ class _QuanLyDonHangState extends State<QuanLyDonHang> {
       case 'Đang giao':
         return 'preparing';
       case 'Hoàn thành':
-        return 'completed';
+        return 'done';
+      case 'Thanh toán': 
+        return 'paid';
       case 'Đã hủy':
         return 'cancelled';
       default:
@@ -106,6 +115,12 @@ class _QuanLyDonHangState extends State<QuanLyDonHang> {
   void initState() {
     super.initState();
     fetchOrders();
+
+    final socketService = ref.read(socketServiceProvider);
+  socketService.socket.on('order:update', (data) {
+    print('📦 Nhận được cập nhật đơn hàng từ socket: $data');
+    fetchOrders(); // Tải lại danh sách đơn
+  });
   }
 
   Color statusColor(String status) {
@@ -258,40 +273,22 @@ class _QuanLyDonHangState extends State<QuanLyDonHang> {
                                         ))
                                     .toList(),
                                 onChanged: (newStatus) async {
-                                  if (newStatus != null &&
-                                      newStatus != order['status']) {
-                                    final orderId =
-                                        order['id'] ?? order['orderCode'];
-                                    final url =
-                                        'https://food-app-cweu.onrender.com/api/v1/Orders/$orderId';
-                                    try {
-                                      final res = await http.patch(
-                                        Uri.parse(url),
-                                        headers: {
-                                          'Content-Type': 'application/json'
-                                        },
-                                        body: jsonEncode({'status': newStatus}),
-                                      );
-                                      if (res.statusCode == 200) {
-                                        setState(() {
-                                          order['status'] = newStatus;
-                                        });
-                                      } else {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                              content: Text(
-                                                  'Cập nhật trạng thái thất bại!')),
-                                        );
-                                      }
-                                    } catch (e) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(content: Text('Lỗi kết nối!')),
-                                      );
-                                    }
-                                  }
-                                },
+  if (newStatus != null && newStatus != order['status']) {
+    final socket = ref.read(socketServiceProvider).socket;
+    final orderId = order['id'];
+
+    // ✅ Gửi sự kiện socket để cập nhật trạng thái
+    socket.emit('order:update', {
+      'id': orderId,
+      'status': newStatus,
+    });
+
+    // ✅ Cập nhật UI local tạm thời (có thể chờ phản hồi socket lại nếu muốn chắc chắn)
+    setState(() {
+      order['status'] = newStatus;
+    });
+  }
+},
                               ),
                               onTap: () {
                                 showDialog(
