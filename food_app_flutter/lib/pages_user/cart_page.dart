@@ -3,7 +3,7 @@ import 'home.dart'; // Giữ nguyên import
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:url_launcher/url_launcher.dart'; 
 // ...existing code...
 
 class CartPage extends StatefulWidget {
@@ -23,7 +23,7 @@ class _CartPageState extends State<CartPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   List<Map<String, dynamic>> cartItems = [];
-  String paymentMethod = 'COD';
+  String paymentMethod = 'cod';
 
   int get totalPrice {
     int sum = 0;
@@ -35,19 +35,20 @@ class _CartPageState extends State<CartPage> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    // Nếu có món mới được truyền vào, thêm vào giỏ hàng toàn cục
-    if (widget.food != null && widget.quantity != null) {
-      CartPage.globalCartItems.add({
-        'name': widget.food?['title'] ?? widget.food?['name'] ?? 'Không tên',
-        'price': widget.food?['price'] ?? 0,
-        'quantity': widget.quantity ?? 1,
-        'thumbnail': widget.food?['thumbnail'] ?? '',
-      });
-    }
-    cartItems = List<Map<String, dynamic>>.from(CartPage.globalCartItems);
+void initState() {
+  super.initState();
+  // Nếu có món mới được truyền vào, thêm vào giỏ hàng toàn cục
+  if (widget.food != null && widget.quantity != null) {
+    CartPage.globalCartItems.add({
+      'productId': widget.food?['id'] ?? widget.food?['productId'], // Thêm dòng này
+      'name': widget.food?['title'] ?? widget.food?['name'] ?? 'Không tên',
+      'price': widget.food?['price'] ?? 0,
+      'quantity': widget.quantity ?? 1,
+      'thumbnail': widget.food?['thumbnail'] ?? '',
+    });
   }
+  cartItems = List<Map<String, dynamic>>.from(CartPage.globalCartItems);
+}
 
   void removeItem(int index) {
     setState(() {
@@ -56,84 +57,98 @@ class _CartPageState extends State<CartPage> {
     });
   }
 
-  // Hàm xử lý đặt hàng được giữ nguyên
-  Future<void> _placeOrder() async {
-    if (cartItems.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Giỏ hàng trống!')),
-      );
-      return;
-    }
-    if (_formKey.currentState?.validate() != true) {
-      return;
-    }
+ 
 
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
-    if (token == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Bạn chưa đăng nhập!')),
-      );
-      return;
-    }
-    final orderData = {
-      'items': cartItems
-          .map((item) => {
-                'title': item['name'] ?? 'Không tên',
-                'quantity': item['quantity'].toString(),
-                'thumbnail': item['thumbnail'] ?? '',
-                'price': item['price'].toString(),
-              })
-          .toList(),
-      'restaurantId': '14c90cd2-4e4b-11f0-a57b-c84bd64b6215',
-      'paymentMethod': paymentMethod.toLowerCase(),
-      'status': 'pending',
-      'address': _addressController.text.trim(),
-      'phone': _phoneController.text.trim(),
-      // Chỉ thêm notes nếu có
-      if (_notesController.text.trim().isNotEmpty)
-        'notes': _notesController.text.trim(),
-    };
-// ...existing code...
-
-    debugPrint('Sending order data: ${jsonEncode(orderData)}');
-
-    try {
-      final response = await http.post(
-        Uri.parse('https://food-app-cweu.onrender.com/api/v1/orders'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode(orderData),
-      );
-
-      debugPrint('Response status: ${response.statusCode}');
-      debugPrint('Response body: ${response.body}');
-
-      if (response.statusCode == 201 || response.statusCode == 200) {
-        setState(() {
-          CartPage.globalCartItems.clear();
-          cartItems.clear();
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Đặt hàng thành công!')),
-        );
-        Navigator.of(context).pushReplacementNamed('/donhang');
-      } else {
-        final error = jsonDecode(response.body);
-        debugPrint('Error details: $error');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Đặt hàng thất bại: ${error['message']}')),
-        );
-      }
-    } catch (e) {
-      debugPrint('Exception while creating order: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Lỗi kết nối: $e')),
-      );
-    }
+Future<void> _placeOrder() async {
+  if (cartItems.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Giỏ hàng trống!')),
+    );
+    return;
   }
+  if (_formKey.currentState?.validate() != true) {
+    return;
+  }
+
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('token');
+  if (token == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Bạn chưa đăng nhập!')),
+    );
+    return;
+  }
+  final orderData = {
+  'address': _addressController.text.trim(),
+  'notes': _notesController.text.trim(),
+  'restaurantId': '14c90cd2-4e4b-11f0-a57b-c84bd64b6215',
+  'items': cartItems
+      .map((item) => {
+            'productId': item['productId'],
+            'quantity': item['quantity'],
+          })
+      .toList(),
+  if (paymentMethod != 'credit_card')
+    'paymentMethod': paymentMethod.toLowerCase(), // Chỉ truyền khi không phải momo
+};
+  print(orderData);
+  try {
+    final apiUrl = paymentMethod == 'credit_card'
+        ? 'https://food-app-cweu.onrender.com/api/v1/momo'
+        : 'https://food-app-cweu.onrender.com/api/v1/orders';
+
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(orderData),
+    );
+
+    if (paymentMethod == 'credit_card') {
+      final resData = jsonDecode(response.body);
+      print(resData);
+      if (response.statusCode == 201 && resData['data']?['payUrl'] != null) {
+        final payUrl = resData['data']['payUrl'];
+        if (await canLaunchUrl(Uri.parse(payUrl))) {
+          await launchUrl(Uri.parse(payUrl), mode: LaunchMode.externalApplication);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Không thể mở trang thanh toán!')),
+          );
+        }
+        return;
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Đặt hàng thất bại: ${resData['message'] ?? 'Lỗi không xác định'}')),
+        );
+        return;
+      }
+    }
+
+    // Xử lý như cũ cho COD
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      setState(() {
+        CartPage.globalCartItems.clear();
+        cartItems.clear();
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Đặt hàng thành công!')),
+      );
+      Navigator.of(context).pushReplacementNamed('/donhang');
+    } else {
+      final error = jsonDecode(response.body);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Đặt hàng thất bại: ${error['message']}')),
+      );
+    }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Lỗi kết nối: $e')),
+    );
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -388,7 +403,7 @@ class _CartPageState extends State<CartPage> {
               Expanded(
                 child: RadioListTile<String>(
                   title: const Text('Chuyển khoản'),
-                  value: 'Bank',
+                  value: 'credit_card',
                   groupValue: paymentMethod,
                   onChanged: (value) {
                     setState(() {

@@ -427,8 +427,9 @@ class _MonAnYeuThichState extends ConsumerState<MonAnYeuThich> {
                                                                       .cover),
                                                             ),
                                                           Flexible(
-                                                            child: Text(
-                                                                '${item?['title'] ?? item?['name'] ?? 'Không rõ'} x${item?['quantity'] ?? 1} - ${item?['price']?.toStringAsFixed(0) ?? 0}đ'),
+                                                            child:Text(
+  '${item['title'] ?? item['name'] ?? 'Không rõ'} x${item['quantity'] ?? 1} - ${(num.tryParse(item['price']?.toString() ?? '0') ?? 0).toStringAsFixed(0)}đ'
+),
                                                           ),
                                                         ],
                                                       ))

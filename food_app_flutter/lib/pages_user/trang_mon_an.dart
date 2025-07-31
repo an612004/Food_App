@@ -424,16 +424,13 @@ class _TrangMonAnState extends State<TrangMonAn> {
                                                           color: Colors.white)),
                                                   onPressed: () {
                                                     // Thêm vào giỏ hàng toàn cục
-                                                    CartPage.globalCartItems
-                                                        .add({
-                                                      'name': food['title'] ??
-                                                          'Không tên',
-                                                      'price':
-                                                          food['price'] ?? 0,
-                                                      'quantity': quantity,
-                                                      'thumbnail':
-                                                          food['thumbnail'],
-                                                    });
+                                                    CartPage.globalCartItems.add({
+  'productId': food['id'] ?? food['productId'], // Thêm dòng này!
+  'name': food['title'] ?? 'Không tên',
+  'price': food['price'] ?? 0,
+  'quantity': quantity,
+  'thumbnail': food['thumbnail'],
+});
                                                     Navigator.pop(context);
                                                     ScaffoldMessenger.of(
                                                             context)
