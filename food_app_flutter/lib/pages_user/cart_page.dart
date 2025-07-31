@@ -20,7 +20,6 @@ class _CartPageState extends State<CartPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   List<Map<String, dynamic>> cartItems = [];
   String paymentMethod = 'cod';
@@ -82,6 +81,7 @@ Future<void> _placeOrder() async {
   'address': _addressController.text.trim(),
   'notes': _notesController.text.trim(),
   'restaurantId': '14c90cd2-4e4b-11f0-a57b-c84bd64b6215',
+  'phone': _phoneController.text.trim(),
   'items': cartItems
       .map((item) => {
             'productId': item['productId'],
@@ -108,7 +108,8 @@ Future<void> _placeOrder() async {
 
     if (paymentMethod == 'credit_card') {
       final resData = jsonDecode(response.body);
-      print(resData);
+      print(resData);final TextEditingController _nameController = TextEditingController();
+
       if (response.statusCode == 201 && resData['data']?['payUrl'] != null) {
         final payUrl = resData['data']['payUrl'];
         if (await canLaunchUrl(Uri.parse(payUrl))) {
@@ -417,10 +418,6 @@ Future<void> _placeOrder() async {
             ],
           ),
           const SizedBox(height: 8),
-          _buildTextFormField(_nameController, 'Tên người nhận',
-              validator: (value) => value == null || value.isEmpty
-                  ? 'Vui lòng nhập tên người nhận'
-                  : null),
           _buildTextFormField(_phoneController, 'Số điện thoại',
               keyboardType: TextInputType.phone,
               validator: (value) => value == null || value.isEmpty

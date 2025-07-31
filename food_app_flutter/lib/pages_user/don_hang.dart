@@ -342,7 +342,7 @@ class _MonAnYeuThichState extends ConsumerState<MonAnYeuThich> {
                                     children: [
                                       const SizedBox(height: 4),
                                       Text(
-                                        'SĐT: ${order['user']?['phone'] ?? 'Không có'}',
+                                        'SĐT: ${order['phone'] ?? 'Không có'}',
                                         style: const TextStyle(
                                             color: Colors.deepOrange),
                                       ),
@@ -352,13 +352,13 @@ class _MonAnYeuThichState extends ConsumerState<MonAnYeuThich> {
                                             color: Colors.orange),
                                       ),
                                       Text(
-                                        'Tổng tiền: ${order['total']?.toStringAsFixed(0) ?? '0'}đ',
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.orange,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
+  'Tổng tiền: ${(order['total'] ?? 0).toString()}đ',
+  style: const TextStyle(
+    fontSize: 16,
+    color: Colors.orange,
+    fontWeight: FontWeight.bold,
+  ),
+),
                                       const SizedBox(height: 4),
                                       Row(
                                         children: [
