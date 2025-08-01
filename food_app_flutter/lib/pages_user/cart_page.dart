@@ -119,6 +119,11 @@ Future<void> _placeOrder() async {
             SnackBar(content: Text('Không thể mở trang thanh toán!')),
           );
         }
+        setState(() {
+        CartPage.globalCartItems.clear();
+        cartItems.clear();
+      });
+      Navigator.of(context).pushReplacementNamed('/donhang');
         return;
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
