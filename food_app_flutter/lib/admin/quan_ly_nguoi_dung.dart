@@ -407,12 +407,14 @@ class _QuanLyNguoiDungState extends State<QuanLyNguoiDung> {
                           title: Text(
                               user['fullName'] ?? user['name'] ?? 'Không tên'),
                           subtitle: Text(
-                            (user['email'] ?? '') +
-                                (user['role'] != null &&
-                                        (user['role'] as String).isNotEmpty
-                                    ? ' | Vai trò: ${user['role']}'
-                                    : ''),
-                          ),
+  (user['email'] ?? '') +
+      ((user['role'] != null &&
+              user['role']['title'] != null &&
+              user['role']['title'].toString().isNotEmpty)
+          ? ' | Vai trò: ${user['role']['title']}'
+          : ''),
+),
+
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
